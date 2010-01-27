@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	A PanSwitcher objects is a visual component for selecting a DashPanel in the DashPanelContainer.
+
+		It performs the same function of pressing the alt+tab combination in, e.g. Windows OSes. 
+		which is popping up a navigable list of the displayed DashPanels of which one can be 
+		selected to be brought to front. 
+
+-->
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" resize="centerWin();" creationComplete="selectNext();">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Label;
+			import mx.containers.VBox;
+			import mx.controls.Image;
+			
+			/**
+			 * The current thumbnail index in the list
+			**/
+			public var currentThumb:int = -1;
+			
+			/**
+			 * @private
+			 * Adds a DashPanel snapshot to the tile list displayed by this PanSwitcher.
+			 * @param image:ByteArray icon of the DashPanel.
+			 * @param title:String title of the Dashanel.
+			 * @param setSize:Boolean If true, sets the dimensions of the provided image to a fixed size. Otherwise it mantains the original image's size.
+			 * 
+			**/
+			public function addPanelSnaphshot( image:ByteArray, title:String = "", setSize:Boolean = true ) : void
+			{
+				var imageShot:Image = new Image( );
+				imageShot.source = image;
+				
+				if ( setSize )
+				{ 
+					imageShot.width = 150;
+					imageShot.height = 100;
+					imageShot.maintainAspectRatio = false;
+				}
+				
+				var snapContainer:VBox = new VBox( );
+					snapContainer.width = 160;
+					snapContainer.height = 130;
+
+				var snapLabel:Label = new Label( );
+					snapLabel.percentWidth = 100;
+					snapLabel.truncateToFit = true;
+					snapLabel.text = title;
+					
+					snapContainer.addChild( snapLabel );
+					snapContainer.addChild( imageShot );
+				
+				tiler.addChild( snapContainer );
+				
+				width += snapContainer.width + 5;
+			}
+			
+			/**
+			 * Select the next thumbnail in the list
+			**/
+			public function selectNext():void
+			{
+				currentThumb++;
+				if ( currentThumb >= tiler.numChildren ) currentThumb = 0; 
+				
+				for ( var i:int = 0; i < tiler.numChildren; i++ )
+				{
+					tiler.getChildAt( i ).filters = [];
+				}
+				
+				var glowEffect:GlowFilter = new GlowFilter();
+					glowEffect.color = 0xAAAAAA;
+					glowEffect.alpha = 1;
+					glowEffect.blurX= 25;
+					glowEffect.blurY = 25;
+					
+				tiler.getChildAt( currentThumb ).filters = [ glowEffect ];
+				
+				
+			}
+			
+			/* 
+			 *******************
+			 * PRIVATE METHODS *
+			 *******************
+			*/
+			
+			/**
+			 * Centers the switcher in the viewport
+			**/
+			private function centerWin():void
+			{
+				move
+				(
+					Math.round( ( stage.stageWidth  - width ) / 2 ),
+					Math.round( ( stage.stageHeight - height) / 2 )
+				);
+			}
+			
+			/* 
+			 ********************
+			 * EVENTS LISTENERS *
+			 ********************
+			*/
+	
+			/**
+			 * Handles the stage resize event
+			 * 
+			 * @param event:Event The Event instance
+			**/
+			private function onResize( event:Event ):void
+			{
+				centerWin();
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:HBox horizontalGap="20" width="100%" height="100%">
+		<mx:Tile
+			id="tiler"
+			width="100%"
+			height="100%"
+			backgroundColor="#ffffff"
+			paddingBottom="5"
+			paddingLeft="5"
+			paddingRight="5"
+			paddingTop="5"
+			verticalGap="5"
+			horizontalGap="5"
+		/>
+	</mx:HBox>
+</mx:Canvas>

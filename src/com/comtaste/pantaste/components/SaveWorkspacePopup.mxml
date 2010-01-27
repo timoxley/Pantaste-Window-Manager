@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+This TitleWindow is popped up whenever one wants to save the current workspace.
+-->
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" title="Save Workspace" creationPolicy="all">
+
+	<mx:VBox width="100%">
+		<mx:TextInput id="workspaceName" width="100%" />
+		<mx:HBox width="100%">
+			<mx:Button label="Save" id="saveBtn" />
+			<mx:Button label="Cancel" id="cancelBtn" />
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>
