@@ -18,7 +18,7 @@ package com.comtaste.pantaste.components
 	import flash.utils.Dictionary;
 	
 	import mx.binding.utils.BindingUtils;
-	import mx.containers.HBox;
+	
 	import mx.controls.Button;
 	import mx.controls.Menu;
 	import mx.core.ClassFactory;
@@ -27,6 +27,7 @@ package com.comtaste.pantaste.components
 	import mx.managers.PopUpManager;
 	
 	import spark.components.Group;
+	import spark.components.HGroup;
 
 	/**
 	 * A DashDock object is the application bar of the related DashPanelContainer.
@@ -61,7 +62,7 @@ package com.comtaste.pantaste.components
 		/**
 		 * Horizontal box containing the Buttons representing the minimized DashPanels.
 		 */ 
-		private var hbox:HBox;
+		private var minimisedPanelsBar:HGroup;
 		
 		/**
 		 * Start button
@@ -172,14 +173,14 @@ package com.comtaste.pantaste.components
 			
 			this.container = container;
 			
-			hbox = new HBox();
-			hbox.x = 10;
-			addElement( hbox );
+			minimisedPanelsBar = new HGroup();
+			minimisedPanelsBar.x = 10;
+			addElement( minimisedPanelsBar );
 			
 			startButton = new Button( );
 			startButton.addEventListener( MouseEvent.CLICK , onStartClick );
 			startButton.label = "Start";
-			hbox.addElement( startButton );
+			minimisedPanelsBar.addElement( startButton );
 			
 			BindingUtils.bindProperty( startButton, "visible", container, "showStartButton" );
 			BindingUtils.bindProperty( startButton, "includeInLayout", container, "showStartButton" );
@@ -251,7 +252,7 @@ package com.comtaste.pantaste.components
 			theButton.label = panel.title;
 			dockedPanel[ theButton ] = panel;
 			theButton.addEventListener( MouseEvent.CLICK, restore );
-			hbox.addElement( theButton );
+			minimisedPanelsBar.addElement( theButton );
 		}
 		
 		/**
@@ -267,7 +268,7 @@ package com.comtaste.pantaste.components
 			{
 				if ( dockedPanel[ key ] == panel )
 				{
-					hbox.removeChild( key as Button );
+					minimisedPanelsBar.removeChild( key as Button );
 					delete dockedPanel[ key ];
 				}
 			}

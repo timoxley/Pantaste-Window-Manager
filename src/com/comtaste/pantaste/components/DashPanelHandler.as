@@ -149,7 +149,6 @@ package com.comtaste.pantaste.components
 		 */ 
 		protected function onMouseOver( event:MouseEvent ):void
 		{
-			trace("DASH PANEL HANDLER: onMouseOver");
 			// Add a stage listener in case the mouse up comes out of the control.
 			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp );
 			
@@ -191,7 +190,6 @@ package com.comtaste.pantaste.components
 		 */ 
 		protected function onMouseUp( event:MouseEvent ) : void
 		{
-			trace("DASH PANEL HANDLER: onMouseUp");
 			wasMoved = false;
 			isMoving = false;
 			
@@ -219,7 +217,6 @@ package com.comtaste.pantaste.components
 		 */ 
 		protected function onMouseMove( event:MouseEvent ) : void
 		{
-			trace("DASH PANEL HANDLER: onMouseMove");
 			if ( parent == null )
 			{
 				return;

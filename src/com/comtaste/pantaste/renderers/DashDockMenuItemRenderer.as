@@ -1,6 +1,7 @@
 package com.comtaste.pantaste.renderers
 {
 	import com.comtaste.pantaste.common.DashConstants;
+	import com.comtaste.pantaste.common.DashConstants;
 	
 	import mx.controls.Menu;
 	import mx.controls.menuClasses.MenuItemRenderer;
