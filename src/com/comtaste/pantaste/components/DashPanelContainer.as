@@ -1,13 +1,21 @@
-package com.comtaste.pantaste.components
-{
+package com.comtaste.pantaste.components {
+	
 	import com.comtaste.pantaste.common.DashConstants;
+	import com.comtaste.pantaste.components.skins.DashPanelContainerSkin;
 	import com.comtaste.pantaste.events.DashPanelContainerEvent;
 	import com.comtaste.pantaste.manager.DashLayoutManager;
+	
+	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.utils.setTimeout;
-	import mx.events.ChildExistenceChangedEvent;
+	
 	import mx.events.FlexEvent;
+	
 	import spark.components.Group;
+	import spark.components.SkinnableContainer;
+	import spark.events.ElementExistenceEvent;
+	
+	
 	/**
 	 * Dispatched when some change occours in sub panels
 	 * moved
@@ -24,20 +32,19 @@ package com.comtaste.pantaste.components
 	 * A DashPanelContainer is the component containing the DashPanels of an application.
 	 * <p>
 	 * 	Each DashPanelContainer references a DashLayoutManager to place the DashPanels it shows.
-	 *  It furthermore has a DashDock in which are displayed the minimized DashPanels in a fashion similar to 
+	 *  It furthermore has a DashDock in which are displayed the minimized DashPanels in a fashion similar to
 	 *  most window-based OS user interfaces.
-	 * 
+	 *
 	 * </p>
 	 */
-	public class DashPanelContainer extends Group
-	{
-
+	public class DashPanelContainer extends SkinnableContainer {
+		
 		//----------------------------------------------------------
 		//
 		//   Static Properties 
 		//
 		//----------------------------------------------------------
-
+		
 		/**
 		 * Constant defining the type of change event of adding a DashPanel.
 		 */
@@ -50,64 +57,72 @@ package com.comtaste.pantaste.components
 		
 		/**
 		 * Constant defining the type of change event of minimizing a DashPanel.
-		 */ 
+		 */
 		public static const PANEL_MINIMIZED:String = "pantastePanelMinimized";
+		
 		/**
-		 * Constant defining the type of change event of moving a DashPanel. 
-		 */ 
+		 * Constant defining the type of change event of moving a DashPanel.
+		 */
 		public static const PANEL_MOVED:String = "pantastePanelMoved";
-
+		
 		/**
 		 * Constant defining the type of change event of removing a DashPanel.
 		 */
 		public static const PANEL_REMOVED:String = "pantastePanelRemoved";
 		
 		/**
-		 * Constant defining the type of change event of restoring a DashPanel. 
+		 * Constant defining the type of change event of restoring a DashPanel.
 		 */
 		public static const PANEL_RESTORED:String = "pantastePanelRestored";
-
+		
 		//----------------------------------------------------------
 		//
 		//   Constructor 
 		//
 		//----------------------------------------------------------
-
+		
 		/**
 		 * Constructor.
 		 */
-		public function DashPanelContainer( )
-		{
-			super( );
-			if( this.name == null || this.name == "" )
-				throw new Error( "A pantastePanelContainer must define an id name" );
-				
-			layoutManager = new DashLayoutManager( this, this.name );
-			this.addEventListener( FlexEvent.INITIALIZE, initializePanel );
-			this.addEventListener( FlexEvent.CREATION_COMPLETE, init );
+		public function DashPanelContainer() {
+			super();
+			
+			/*if (this.name == null || this.name == "")
+			 throw new Error("A pantastePanelContainer must define an id name");*/
+			
+			addEventListener(FlexEvent.PREINITIALIZE, onPreInitialize);
+			addEventListener(FlexEvent.INITIALIZE, onInitialize);
+			addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
+			layoutManager = DashLayoutManager.getManager(this);
+		
 		}
-
-
+		
 		//----------------------------------------------------------
 		//
 		//    Public Properties 
 		//
 		//----------------------------------------------------------
-
+		
+		/**
+		 * Group that contains the actual DashPanels
+		 */
+		[SkinPart(required='true')]
+		public var panels:Group;
+		
 		/**
 		 * The available height to place the DashPanels.
 		 */
 		public var availHeight:Number;
-
+		
 		/**
 		 * The available width to place the DashPanels.
 		 */
 		public var availWidth:Number;
-
+		
 		//--------------------------------------
 		// cascadeSize 
 		//--------------------------------------
-
+		
 		/**
 		 * Vertical and horizontal offset when cascading the DashPanels.
 		 */
@@ -117,20 +132,18 @@ package com.comtaste.pantaste.components
 		 * Vertical and horizontal offset when cascading the DashPanels.
 		 */
 		[Bindable]
-		public function get cascadeSize( ) : Number
-		{
-			return _cascadeSize;	
+		public function get cascadeSize():Number {
+			return _cascadeSize;
 		}
 		
-		public function set cascadeSize( value:Number ) : void
-		{
+		public function set cascadeSize(value:Number):void {
 			_cascadeSize = value;
 		}
-
+		
 		//--------------------------------------
 		// dashed 
 		//--------------------------------------
-
+		
 		/**
 		 * Indicates whether the container area is dashed.
 		 */
@@ -140,25 +153,22 @@ package com.comtaste.pantaste.components
 		 * Indicates whether the container area is dashed.
 		 */
 		[Bindable]
-		public function get dashed( ) : Boolean
-		{
+		public function get dashed():Boolean {
 			return _dashed;
 		}
 		
-		public function set dashed( value:Boolean ) : void
-		{
-			if ( value )
-			{
+		public function set dashed(value:Boolean):void {
+			if (value) {
 				/* _snapped = false; */
-				layoutManager.tile( );
+				layoutManager.tile();
 			}
 			_dashed = value;
 		}
-
+		
 		//--------------------------------------
 		// dock 
 		//--------------------------------------
-
+		
 		/**
 		 * Reference to this DashPanelContainer's DashDock bar.
 		 * @see com.comtaste.pantaste.components.DashDock
@@ -169,20 +179,23 @@ package com.comtaste.pantaste.components
 		 * Set the dock to use for the container.
 		 */
 		[Bindable]
-		public function get dock( ) : DashDock
-		{
+		[SkinPart(required='true')]
+		public function get dock():DashDock {
 			return _dock;
 		}
 		
-		public function set dock( value:DashDock ) : void
-		{
+		public function set dock(value:DashDock):void {
 			_dock = value;
+			_dock.container = this;
 		}
-
+		
+		[SkinPart(required='true')]
+		public var grid:Sprite;
+		
 		//--------------------------------------
 		// showStartButton 
 		//--------------------------------------
-
+		
 		/**
 		 * Vertical and horizontal offset when cascading the DashPanels.
 		 */
@@ -192,21 +205,18 @@ package com.comtaste.pantaste.components
 		 * Hide or show the start button.
 		 */
 		[Bindable]
-		public function get showStartButton( ) : Boolean
-		{
-			return _showStartButton;	
+		public function get showStartButton():Boolean {
+			return _showStartButton;
 		}
 		
-		
-		public function set showStartButton( value:Boolean ) : void
-		{
+		public function set showStartButton(value:Boolean):void {
 			_showStartButton = value;
 		}
-
+		
 		//--------------------------------------
 		// snapSize 
 		//--------------------------------------
-
+		
 		/**
 		 * Side length of each square cell of the snap grid.
 		 */
@@ -216,213 +226,215 @@ package com.comtaste.pantaste.components
 		 * Side length of each square cell of the snap grid.
 		 */
 		[Bindable]
-		public function get snapSize( ) : Number
-		{
-			return _snapSize;	
+		public function get snapSize():Number {
+			return _snapSize;
 		}
 		
-		public function set snapSize( value:Number ) : void
-		{
+		public function set snapSize(value:Number):void {
 			_snapSize = value;
-			updateDisplayList( unscaledWidth, unscaledHeight );
+			updateDisplayList(unscaledWidth, unscaledHeight);
 		}
-
+		
 		//--------------------------------------
 		// snapped 
 		//--------------------------------------
-
+		
 		/**
 		 * Indicates whether there exists a snap grid in the container area.
 		 */
-		private var _snapped:Boolean = false;
-
+		private var _snapped:Boolean = true;
+		
 		/**
 		 * Indicates whether there exists a snap grid in the container area.
 		 */
 		[Bindable]
-		public function get snapped( ) : Boolean
-		{
+		public function get snapped():Boolean {
 			return _snapped;
 		}
 		
-
-		public function set snapped( value:Boolean ) : void
-		{
+		public function set snapped(value:Boolean):void {
 			/* if ( value )
-				_dashed = false; */
+			 _dashed = false; */
 			_snapped = value;
-			updateDisplayList( unscaledWidth, unscaledHeight );
+			updateDisplayList(unscaledWidth, unscaledHeight);
 		}
-
+		
 		//----------------------------------------------------------
 		//
 		//    Protected Properties 
 		//
 		//----------------------------------------------------------
-
+		
 		/**
 		 * Reference to this DashPanelContainer's DashLayoutManager.
-		 * @see com.comtaste.pantaste.manager.DashLayoutManager 
-		 */		
+		 * @see com.comtaste.pantaste.manager.DashLayoutManager
+		 */
 		protected var layoutManager:DashLayoutManager;
-
-
+		
 		//----------------------------------------------------------
 		//
 		//   Public Functions 
 		//
 		//----------------------------------------------------------
-
+		
 		/**
 		 * Dispatches the DashPanelContainerEvent related to a change in the content of the DashPanelContainer
 		 * @param changeType:String The string specifying the type of change occurred
 		 * @see com.comtaste.pantaste.events.DashPanelContainerEvent
 		 */
-		public function generatepantasteChangeEvent( changeType:String, panel:DashPanel ):void
-		{
-			dispatchEvent( new DashPanelContainerEvent( DashPanelContainerEvent.pantaste_CHANGED, this, changeType, panel ) ); 
+		public function generatepantasteChangeEvent(changeType:String, panel:DashPanel):void {
+			dispatchEvent(new DashPanelContainerEvent(DashPanelContainerEvent.pantaste_CHANGED,
+													  this, changeType, panel));
 		}
-
+		
 		//----------------------------------------------------------
 		//
 		//   Protected Functions 
 		//
 		//----------------------------------------------------------
-
+		public function addPanel(element:DashPanel):void {
+			this.panels.addElement(element);
+			
+		}
+		
+		public function removePanel(element:DashPanel):void{
+			this.panels.removeElement(element);
+			
+		} 
+		
+		override protected function partAdded(partName:String, instance:Object) : void {
+			trace("skinPartAdded: container: " + partName);
+			/*if (instance == dock) {
+				dock.container = this;
+			}*/
+		}
+		
+		
 		/**
 		 * @inheritDoc
 		 */
-		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number) : void
-		{
-			super.updateDisplayList( unscaledWidth, unscaledHeight );
+		override protected function updateDisplayList(unscaledWidth:Number,
+													  unscaledHeight:Number):void {
+			super.updateDisplayList(unscaledWidth, unscaledHeight);
 			
-			if ( dock )
-			{
-				dock.y = height - dock.height;
-				//dock.bottom = 0;
-			}
+		
 			
-			graphics.clear();
+			grid.graphics.clear();
 			
-			if ( snapped )
-			{	
+			if (snapped) {
 				var stepping:int = snapSize;
 				var i:int = stepping;
 				
-				graphics.lineStyle(1, 0xCCCCCC);
+				grid.graphics.lineStyle(1, 0xCCCCCC);
 				
-				while(i < unscaledWidth) {
-					graphics.moveTo(i, 0);
-					graphics.lineTo(i, unscaledHeight);
+				while (i < unscaledWidth) {
+					grid.graphics.moveTo(i, 0);
+					grid.graphics.lineTo(i, unscaledHeight);
 					i += stepping;
 				}
 				
 				i = stepping;
 				
-				while(i < unscaledHeight) {
-					graphics.moveTo(0, i);
-					graphics.lineTo(unscaledWidth, i);
+				while (i < unscaledHeight) {
+					grid.graphics.moveTo(0, i);
+					grid.graphics.lineTo(unscaledWidth, i);
 					i += stepping;
 				}
 			}
 		}
-
+		
 		//----------------------------------------------------------
 		//
 		//    Private Functions 
 		//
 		//----------------------------------------------------------
-
+		
 		/**
 		 * Initialization code for this DashPanelContainer
 		 * @param event:FlexEvent the creationComplete FlexEvent
 		 */
-		private function init( event:FlexEvent ) : void
-		{
-			if ( !_dock )
-			{
-				_dock = new DashDock( this );
-				_dock.percentWidth = 100;
-				_dock.height = 35;
-			}
+		private function onCreationComplete(event:FlexEvent):void {
+
 			
-			addElement( _dock );
 			
-			if ( !snapSize )
+			//addElement(_dock);
+			
+			if (!snapSize)
 				snapSize = DashConstants.DEFAULT_DASH_SNAP_SIZE;
-				
-			if ( !cascadeSize )
+			
+			if (!cascadeSize)
 				cascadeSize = DashConstants.DEFAULT_DASH_CASCADE_SIZE;
 			
 			// register restore event for all panel
 			var item:Object;
 			var panel:DashPanel;
-			var numElements:uint = this.numElements;
+			var numElements:uint = panels.numElements;
 			
-			for(var i:uint = 0; i < numElements; i++) {
-				item = this.getElementAt(i);
-			
-				if( item is DashPanel )
-				{
+			for (var i:uint = 0; i < numElements; i++) {
+				item = panels.getElementAt(i);
+				
+				if (item is DashPanel) {
 					panel = item as DashPanel;
-					panel.addEventListener( DashPanel.RESTORED, restorePanelSize );
-				}
-				else
+					panel.addEventListener(DashPanel.RESTORED, restorePanelSize);
+				} else
 					continue;
-			
 			}
-
 			
-			this.addEventListener( ChildExistenceChangedEvent.CHILD_ADD, panelAdded );
-			this.addEventListener( ChildExistenceChangedEvent.CHILD_REMOVE, panelRemoved );
+			panels.addEventListener(ElementExistenceEvent.ELEMENT_ADD, panelAdded);
+			panels.addEventListener(ElementExistenceEvent.ELEMENT_REMOVE, panelRemoved);
 		}
 		
 		/**
 		 * Initialization code for this DashPanelContainer
 		 * @param event:FlexEvent the initialization FlexEvent
 		 */
-		private function initializePanel( event:FlexEvent ) : void
-		{
-			/*
-			 * WORKAROUND da fixare
-			 * necessario per permettere all'utente di usare l'id del nodo come 
-			 * chiave x il multiton
-			 * 
-			 **/
-			DashLayoutManager.updateInstanceKey( layoutManager, this.id );
-			 
-			this.removeEventListener( FlexEvent.INITIALIZE, initializePanel );
+		private function onInitialize(event:FlexEvent):void {
+			removeEventListener(FlexEvent.INITIALIZE, onInitialize);
+			
+		}
+		
+		/**
+		 * Initialization code for children of this DashPanelContainer
+		 * @param event:FlexEvent the initialization FlexEvent
+		 */
+		private function onPreInitialize(event:FlexEvent):void {
+			removeEventListener(FlexEvent.PREINITIALIZE, onPreInitialize);
+			setStyle('skinClass', com.comtaste.pantaste.components.skins.DashPanelContainerSkin);
+			
 		}
 		
 		/**
 		 * Handler of the addition of a DashPanel event
 		 * @param evt:ChildExistenceChangedEvent the event related to the addition of a DashPanel
 		 */
-		private function panelAdded( evt:ChildExistenceChangedEvent ) : void
-		{
-			generatepantasteChangeEvent( DashPanelContainer.PANEL_ADDED, evt.relatedObject as DashPanel );
+		private function panelAdded(event:ElementExistenceEvent):void {
+			generatepantasteChangeEvent(DashPanelContainer.PANEL_ADDED,
+										event.element as DashPanel);
 		}
 		
 		/**
 		 * Handler of the removing of a DashPanel event
 		 * @param evt:ChildExistenceChangedEvent the event related to the removing of a DashPanel
 		 */
-		private function panelRemoved( evt:ChildExistenceChangedEvent ) : void
-		{
-			generatepantasteChangeEvent( DashPanelContainer.PANEL_REMOVED, evt.relatedObject as DashPanel );
+		private function panelRemoved(event:ElementExistenceEvent):void {
+			generatepantasteChangeEvent(DashPanelContainer.PANEL_REMOVED,
+				event.element as DashPanel);
 		}
 		
 		/**
 		 * Handler of the restoring of a DashPanel event
 		 * @param evt:Event the event related to the restoring of a DashPanel
 		 */
-		private function restorePanelSize( evt:Event ) : void
-		{
-			var panel:DashPanel = evt.target as DashPanel;
+		private function restorePanelSize(event:Event):void {
+			var panel:DashPanel = event.target as DashPanel;
 			
-			setTimeout( function():void {
-				layoutManager.applyEffect( arguments[0], arguments[1], arguments[2], arguments[3], arguments[4] );
-			}, 1, panel, panel.restoredX, panel.restoredY, panel.restoredWidth, panel.restoredHeight );
+			setTimeout(function():void {
+					layoutManager.applyEffect(arguments[0], arguments[1], arguments[2],
+											  arguments[3], arguments[4]);
+				}, 1, panel, panel.restoredX, panel.restoredY, panel.restoredWidth,
+											  panel.restoredHeight);
 		}
+		
+	
 	}
 }

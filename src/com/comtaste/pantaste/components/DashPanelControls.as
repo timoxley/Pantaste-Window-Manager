@@ -1,32 +1,20 @@
-/*
- * 
- * definisce i controlli di un panel:
- * 		minimize
- * 		maximize
- * 		restore
- * 		close
- * 		fitAvailableSpace
- * 
- * espone metodi per nascondere e mostrare i controlli necesseri
- */
-package com.comtaste.pantaste.components
-{
+package com.comtaste.pantaste.components {
+	import com.comtaste.pantaste.components.skins.DashPanelControlsSkin;
 	import com.comtaste.pantaste.events.DashPanelEvent;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
 	import mx.binding.utils.BindingUtils;
-	import mx.containers.HBox;
-	import mx.controls.Button;
-	import mx.core.ScrollPolicy;
 	import mx.events.FlexEvent;
 	
-	import spark.components.Group;
-
+	import spark.components.Button;
+	import spark.components.SkinnableContainer;
+	
+	
 	/**
 	 * Control buttons of a DashPanel.
-	 * 
+	 *
 	 * <p>It contains the buttons to perform the following actions over the DashPanel component:
 	 * <ul>
 	 * <li><b>minimize</b> - Minimizes the relative DashPanel to the DashDock</li>
@@ -35,186 +23,178 @@ package com.comtaste.pantaste.components
 	 * <li><b>close</b> - closes the relative DashPanel</li>
 	 * </ul>
 	 * </p>
-	 * 
+	 *
 	 * @see com.comtaste.pantaste.components.DashDock DashDock
 	 * @see com.comtaste.pantaste.components.DashPanel DashPanel
-	 */ 
-	public class DashPanelControls extends Group implements IDashPanelElement
-	{
-		/**
-		 * Reference to the relative DashPanel
-		 */ 
-		private var panel:DashPanel;
+	 */
+	public class DashPanelControls extends SkinnableContainer implements IDashPanelElement {
+		
+		//----------------------------------------------------------
+		//
+		//   Constructor 
+		//
+		//----------------------------------------------------------
 		
 		/**
-		 * Button to minimize the relative DashPanel to the DashDock.
-		 * @see com.comtaste.pantaste.components.DashDock DashDock
-	 	 * @see com.comtaste.pantaste.components.DashPanel DashPanel
-		 */ 
-		private var minimizeButton:Button;
+		 * Constructor.
+		 * @param panel:DashPanel The relative DashPanel
+		 * @see com.comtaste.pantaste.components.DashPanel DashPanel
+		 */
+		public function DashPanelControls() {
+			super();
+
+			addEventListener(FlexEvent.PREINITIALIZE, onPreInitialize);
+		
+		}
+		
+		//----------------------------------------------------------
+		//
+		//    Public Properties 
+		//
+		//----------------------------------------------------------
+		
+		/**
+		 * Close button.
+		 */
+		[SkinPart(required="true")]
+		public var closeButton:Button;
 		
 		/**
 		 * Button to maximize/restore the size of the DashPanel.
 		 * @see com.comtaste.pantaste.components.DashPanel DashPanel
 		 */
+		[SkinPart(required="true")]
 		public var maximizeRestoreButton:Button;
 		
 		/**
-		 * Close button.
+		 * Button to minimize the relative DashPanel to the DashDock.
+		 * @see com.comtaste.pantaste.components.DashDock DashDock
+		 * @see com.comtaste.pantaste.components.DashPanel DashPanel
 		 */
-		private var closeButton:Button;
+		[SkinPart(required="true")]
+		public var minimizeButton:Button;
 		
 		/**
-		 * Constructor.
-		 * @param panel:DashPanel The relative DashPanel
-		 * @see com.comtaste.pantaste.components.DashPanel DashPanel 
+		 * Reference to the relative DashPanel
 		 */
-		public function DashPanelControls( panel:DashPanel )
-		{
-			super();
-			
-			this.panel = panel;
-		/*	verticalScrollPolicy = ScrollPolicy.OFF;
-			horizontalScrollPolicy = ScrollPolicy.OFF;*/
-			
-			addEventListener( FlexEvent.CREATION_COMPLETE, init );
-		}
+		[Bindable]
+		public var panel:DashPanel;
+		
+		//----------------------------------------------------------
+		//
+		//   Protected Functions 
+		//
+		//----------------------------------------------------------
 		
 		/**
-		 * Handler of the initialization event.
-		 * @param event:FlexEvent FlexEvent related to the initialization of this component. 
-		 */ 
-		protected function init( event:FlexEvent ) : void
-		{
-			var hboxContainer:HBox = new HBox();
-			hboxContainer.percentHeight = 100;
-			hboxContainer.verticalScrollPolicy = ScrollPolicy.OFF;
-			hboxContainer.horizontalScrollPolicy = ScrollPolicy.OFF;
-			hboxContainer.setStyle( "verticalAlign", "middle" );
-			//hBoxContainer.styleName = "controls";
-			
-			/* if ( panel.minimizable )
-			{ */
-				minimizeButton = new Button();
-				BindingUtils.bindProperty(minimizeButton, "visible", panel, "minimizable" );
-				BindingUtils.bindProperty(minimizeButton, "includeInLayout", panel, "minimizable" );
-				minimizeButton.styleName = "minimizeButton";
-				hboxContainer.addElement( minimizeButton );
-			/* } */
-			
-			/* if ( panel.maximizable )
-			{ */
-				maximizeRestoreButton = new Button();
-				BindingUtils.bindProperty(maximizeRestoreButton, "visible", panel, "maximizable" );
-				BindingUtils.bindProperty(maximizeRestoreButton, "includeInLayout", panel, "maximizable" );
-				maximizeRestoreButton.styleName = "maximizeButton";
-				hboxContainer.addElement( maximizeRestoreButton );
-			/* } */
-			
-			/* if ( panel.closable )
-			{ */
-				closeButton = new Button();
-				BindingUtils.bindProperty(closeButton, "visible", panel, "closable" );
-				BindingUtils.bindProperty(closeButton, "includeInLayout", panel, "closable" );
-				closeButton.styleName = "closeButton";
-				hboxContainer.addElement( closeButton );
-			/* } */
-
-			addElement( hboxContainer );
-			
-			addListeners();
-		}
-		/**
-		 * Adds listeners to the buttons of this DashPanelControls.
-		 * @see #minimizeButton
-		 * @see #maximizeRestoreButton
+		 * Handler to the click event on the <code>closeButton</code> button.
+		 *
+		 * <p>It dispatches a DashPanelEvent.CLOSE event.</p>
+		 *
+		 * @param event:MouseEvent close event.
 		 * @see #closeButton
-		 */ 
-		protected function addListeners( ) : void
-		{
-			if ( minimizeButton )
-				minimizeButton.addEventListener( MouseEvent.CLICK, minimize );
-			
-			if ( maximizeRestoreButton )
-				maximizeRestoreButton.addEventListener( MouseEvent.CLICK, maximizeRestore );
-				
-			if ( closeButton )
-				closeButton.addEventListener( MouseEvent.CLICK, close );
-		}
-		/**
-		 * Handler to the click event on the <code>minimizeButton</code> button.
-		 * 
-		 * <p>It dispatches a DashPanelEvent.MINIMIZED event.</p>
-		 *  
-		 * @param event:Event minimization event.
-		 * @see #minimizeButton
 		 * @see flash.events.Event Event
-		 */ 
-		protected function minimize( event:Event = null ) : void
-		{
-			if ( maximizeRestoreButton )
-				maximizeRestoreButton.styleName = "maximizeButton";
-			
-			/* panel.status = DashPanel.MINIMIZED; */
-			
-			var minimizedEvent:DashPanelEvent = new DashPanelEvent( DashPanelEvent.MINIMIZE, panel );
-			panel.dispatchEvent( minimizedEvent );
+		 * @see com.comtaste.pantaste.events.DashPanelEvent
+		 */
+		protected function close(event:MouseEvent):void {
+			panel.dispatchEvent(new DashPanelEvent(DashPanelEvent.CLOSE, panel));
 		}
 		
 		/**
 		 * Handler to the click event on the <code>maximizeRestoreButton</code> button.
-		 * 
+		 *
 		 * <p>It dispatches a DashPanelEvent.RESTORED event if the DashPanel is maximized or minimized, otherwise a DashPanelEvent.MAXIMIZE event.</p>
 		 * @param event:Event maximization/restore event.
 		 * @see #maximizeRestoreButton
 		 * @see flash.events.Event Event
 		 * @see com.comtaste.pantaste.events.DashPanelEvent
-		 */ 
-		protected function maximizeRestore( event:Event = null ) : void
-		{
+		 */
+		protected function maximizeRestore(event:Event=null):void {
 			var restoredEvent:DashPanelEvent;
-			if ( panel.status == DashPanel.RESTORED )
-			{
-				maximizeRestoreButton.styleName = "restoreButton";
+			
+			if (panel.status == DashPanel.RESTORED) {
+				//maximizeRestoreButton.styleName = "restoreButton";
 				
 				/* panel.status = DashPanel.MAXIMIZED; */
 				
-				var maximizedEvent:DashPanelEvent = new DashPanelEvent( DashPanelEvent.MAXIMIZE, panel );
-				panel.dispatchEvent( maximizedEvent );
-			}
-			else if ( panel.status == DashPanel.MAXIMIZED )
-			{
-				maximizeRestoreButton.styleName = "maximizeButton";
-				
-				/* panel.status = DashPanel.RESTORED; */
-			
-				restoredEvent = new DashPanelEvent( DashPanelEvent.RESTORE, panel );
-				panel.dispatchEvent( restoredEvent );
-			}
-			else if ( panel.status == DashPanel.MINIMIZED )
-			{
-				maximizeRestoreButton.styleName = "maximizeButton";
+				panel.dispatchEvent(new DashPanelEvent(DashPanelEvent.MAXIMIZE, panel));
+			} else if (panel.status == DashPanel.MAXIMIZED) {
+				//maximizeRestoreButton.styleName = "maximizeButton";
 				
 				/* panel.status = DashPanel.RESTORED; */
 				
-				restoredEvent = new DashPanelEvent( DashPanelEvent.RESTORE, panel );
-				panel.dispatchEvent( restoredEvent );
+				panel.dispatchEvent(new DashPanelEvent(DashPanelEvent.RESTORE, panel));
+			} else if (panel.status == DashPanel.MINIMIZED) {
+				//maximizeRestoreButton.styleName = "maximizeButton";
+				
+				/* panel.status = DashPanel.RESTORED; */
+				
+				panel.dispatchEvent(new DashPanelEvent(DashPanelEvent.RESTORE, panel));
 			}
 		}
+		
 		/**
-		 * Handler to the click event on the <code>closeButton</code> button.
-		 * 
-		 * <p>It dispatches a DashPanelEvent.CLOSE event.</p>
-		 * 
-		 * @param event:MouseEvent close event.
-		 * @see #closeButton
+		 * Handler to the click event on the <code>minimizeButton</code> button.
+		 *
+		 * <p>It dispatches a DashPanelEvent.MINIMIZED event.</p>
+		 *
+		 * @param event:Event minimization event.
+		 * @see #minimizeButton
 		 * @see flash.events.Event Event
-		 * @see com.comtaste.pantaste.events.DashPanelEvent
-		 */ 
-		protected function close( event:MouseEvent ) : void
-		{
-			var closeEvent:DashPanelEvent = new DashPanelEvent( DashPanelEvent.CLOSE, panel );
-			panel.dispatchEvent( closeEvent );
+		 */
+		protected function minimize(event:Event=null):void {
+			panel.dispatchEvent(new DashPanelEvent(DashPanelEvent.MINIMIZE, panel));
+		}
+		
+		
+		/**
+		 * Setup default component skin
+		 * @param event:FlexEvent FlexEvent related to the initialization of this component.
+		 */
+		protected function onPreInitialize(event:FlexEvent):void {
+			removeEventListener(FlexEvent.PREINITIALIZE, onPreInitialize);
+			setStyle('skinClass', com.comtaste.pantaste.components.skins.DashPanelControlsSkin);
+		}
+		
+		
+		/**
+		 * Add listeners to the control buttons & prevent mouse events from bubbling up to container components.
+		 * @inheritDoc
+		 * @see #minimizeButton
+		 * @see #maximizeRestoreButton
+		 * @see #closeButton
+		 */
+		override protected function partAdded(partName:String, instance:Object):void {
+			if (instance == minimizeButton) {
+				BindingUtils.bindProperty(minimizeButton, "visible", panel, "minimizable");
+				BindingUtils.bindProperty(minimizeButton, "includeInLayout", panel, "minimizable");
+				minimizeButton.addEventListener(MouseEvent.CLICK, minimize);
+				minimizeButton.addEventListener(MouseEvent.MOUSE_OVER, killEvent);
+				minimizeButton.addEventListener(MouseEvent.MOUSE_DOWN, killEvent);
+			}
+			
+			if (instance == maximizeRestoreButton) {
+				BindingUtils.bindProperty(maximizeRestoreButton, "visible", panel, "maximizable");
+				BindingUtils.bindProperty(maximizeRestoreButton, "includeInLayout", panel,
+										  "maximizable");
+				maximizeRestoreButton.addEventListener(MouseEvent.CLICK, maximizeRestore);
+				maximizeRestoreButton.addEventListener(MouseEvent.MOUSE_OVER, killEvent);
+				maximizeRestoreButton.addEventListener(MouseEvent.MOUSE_DOWN, killEvent);
+				
+			}
+			
+			if (instance == closeButton) {
+				BindingUtils.bindProperty(closeButton, "visible", panel, "closable");
+				BindingUtils.bindProperty(closeButton, "includeInLayout", panel, "closable");
+				closeButton.addEventListener(MouseEvent.CLICK, close);
+				closeButton.addEventListener(MouseEvent.MOUSE_OVER, killEvent);
+				closeButton.addEventListener(MouseEvent.MOUSE_DOWN, killEvent);
+				
+			}
+		}
+		
+		public function killEvent(event:MouseEvent):void {
+			event.stopPropagation();
 		}
 	}
 }

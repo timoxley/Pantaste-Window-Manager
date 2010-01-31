@@ -3,7 +3,7 @@ package com.comtaste.pantaste.manager {
 	import com.comtaste.pantaste.events.DashManagerEvent;
 	import com.comtaste.pantaste.events.DashPanelEvent;
 	import com.comtaste.pantaste.utilities.DashPanelAspectVO;
-	import com.ericfeminella.collections.HashMap;
+	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -14,6 +14,7 @@ package com.comtaste.pantaste.manager {
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	import flash.utils.setTimeout;
+	
 	import mx.controls.Image;
 	import mx.core.Application;
 	import mx.core.IFlexDisplayObject;
@@ -27,7 +28,9 @@ package com.comtaste.pantaste.manager {
 	import mx.graphics.ImageSnapshot;
 	import mx.managers.ISystemManager;
 	import mx.managers.PopUpManager;
+	
 	import spark.events.ElementExistenceEvent;
+	import spark.skins.SparkSkin;
 	
 	
 	/**
@@ -49,7 +52,7 @@ package com.comtaste.pantaste.manager {
 		/**
 		 * Mapping of DashPanelContainers to their relative DashLayoutManagers.
 		 */
-		private static var multiton:HashMap = new HashMap();
+		private static var multiton:Dictionary = new Dictionary();
 		
 		//----------------------------------------------------------
 		//
@@ -61,11 +64,15 @@ package com.comtaste.pantaste.manager {
 		 * Returns the DashLayoutManager that manages the Container identified by instanceKey.
 		 * @return DashLayoutManager - the instance of DashLayoutManager that manages the Container identified by instanceKey.
 		 */
-		public static function getManager(instanceKey:*):DashLayoutManager {
-			if (multiton.getValue(instanceKey) == null && instanceKey != null) {
-				//multiton.put( instanceKey, new DashLayoutManager( Application.application as DashPanelContainer, instanceKey ) );
+		public static function getManager(instance:DashPanelContainer):DashLayoutManager {
+			/*if (multiton.getValue(instanceKey) == null && instanceKey != null) {
+			   //multiton.put( instanceKey, new DashLayoutManager( Application.application as DashPanelContainer, instanceKey ) );
+			 }*/
+			//return multiton.getValue(instanceKey) as DashLayoutManager;
+			if (!multiton.hasOwnProperty(instance)) {
+				multiton[instance] = new DashLayoutManager(instance);
 			}
-			return multiton.getValue(instanceKey) as DashLayoutManager;
+			return DashLayoutManager(multiton[instance]);
 		}
 		
 		/**
@@ -118,24 +125,6 @@ package com.comtaste.pantaste.manager {
 			return panelDetails;
 		}
 		
-		/**
-		 * Updates the key of the key-value pair stored in <code>this.multiton</code>.
-		 * @param layoutManager:DashLayoutManager The DashLayoutManager whose key has to be changed.
-		 * @param newKey:* The new value of the key pointing to <code>layoutManager</code>
-		 * @throws Error if the DashLayoutManager has not been registered in the <code>multiton</code> dictionary.
-		 * @see #multiton
-		 */
-		public static function updateInstanceKey(layoutManager:DashLayoutManager, newKey:*):void {
-			var actualKey:* = multiton.getKey(layoutManager);
-			
-			if (actualKey == null)
-				throw new Error("Impossible update a key reference for a not registered DashLayoutManager");
-			// add new key
-			multiton.put(newKey, layoutManager);
-			// remove old temporary key
-			multiton.remove(actualKey);
-		}
-		
 		//----------------------------------------------------------
 		//
 		//   Constructor 
@@ -149,19 +138,19 @@ package com.comtaste.pantaste.manager {
 		 * @param container:DashPanelContainer The container to manage
 		 * @param instanceKey:* The key associated to this container.
 		 */
-		public function DashLayoutManager(container:DashPanelContainer, instanceKey:*) {
+		public function DashLayoutManager(container:DashPanelContainer) {
 			
 			this.container = container;
 			container.addEventListener(FlexEvent.CREATION_COMPLETE, onContainerComplete)
-			container.addEventListener(ElementExistenceEvent.ELEMENT_ADD, onAddedOnStage);
 			
 			container.addEventListener(ResizeEvent.RESIZE, onContainerResize);
 			container.addEventListener(FlexEvent.SHOW, onContainerResize);
 			container.addEventListener(IndexChangedEvent.CHILD_INDEX_CHANGE, onChildIndexChange);
-			
+		
+			//getManager(container);
 			//container.horizontalScrollPolicy = ScrollPolicy.OFF;
 			//container.verticalScrollPolicy = ScrollPolicy.OFF;
-			multiton.put(instanceKey, this);
+			//multiton.put(container, this);
 		
 			//	systemManager.addEventListener( KeyboardEvent.KEY_DOWN, onKeyDown,   true );
 			//	systemManager.addEventListener( KeyboardEvent.KEY_UP,   onKeyUp,     true );
@@ -302,13 +291,16 @@ package com.comtaste.pantaste.manager {
 		 * @param element:UIComponent The component to be brought to front.
 		 */
 		public function bringToFront(element:UIComponent):void {
-			if (element && container.contains(element)) {
-				container.setElementIndex(element, container.numChildren - 1);
+			if (element && container.panels.contains(element)) {
+				if (container.panels.getElementIndex(element) !=  container.numChildren - 1) {
+					container.panels.setElementIndex(element, container.numChildren - 1);
+				}
 				
-				if (element is DashPanel) {
+				
+				/*if (element is DashPanel) {
 					if (icons[element])
 						bringToFront(icons[element]);
-				}
+				}*/
 			}
 		}
 		
@@ -542,7 +534,7 @@ package com.comtaste.pantaste.manager {
 			if (!handler) {
 				handler = new DashPanelHandler();
 				handler.visible = false;
-				container.addElement(handler);
+				SparkSkin(container.skin).addElement(handler);
 			}
 			
 			handler.addEventListener(DashManagerEvent.PANEL_HANDLER_MOVING, applyConstraintOnMove);
@@ -744,9 +736,9 @@ package com.comtaste.pantaste.manager {
 		 * @param event:MouseEvent the related MouseEvent.MOUSE_UP type event
 		 */
 		protected function finishWork(event:MouseEvent):void {
-			if (event.buttonDown)
+			if (event.buttonDown) {
 				return;
-			
+			}
 			applyConstraint(handlerMoved, handlerResized);
 			container.stage.removeEventListener(MouseEvent.MOUSE_UP, finishWork);
 			destroyHandler(event);
@@ -754,32 +746,13 @@ package com.comtaste.pantaste.manager {
 		}
 		
 		/**
-		 * Handler of the addition of the container to the stage.
-		 * @param event:ChildExistenceChangedEvent the event of changed existence of the container
-		 */
-		protected function onAddedOnStage(event:ElementExistenceEvent):void {
-			
-			if (!(event.element is DashPanel))
-				return;
-			
-			var panel:DashPanel;
-			panel = event.element as DashPanel;
-			
-			if (panelList.indexOf(panel) < 0) {
-				this.panelList.push(panel);
-				configurePanel(panel);
-			}
-			
-			addHandler();
-		}
-		
-		/**
 		 * Executed when the children order of the container is changed. It rearranges the indexes of the whole childrens' set.
 		 * @param event:IndexChangedEvent The index change event
 		 */
 		protected function onChildIndexChange(event:IndexChangedEvent):void {
-			if (stopChIndex || event.relatedObject is DashPanelHandler)
+			if (stopChIndex || event.relatedObject is DashPanelHandler) {
 				return;
+			}
 			
 			var allFrArray:Array = getAlwaysInFrontPanelList();
 			
@@ -793,8 +766,8 @@ package com.comtaste.pantaste.manager {
 			
 			if (event.relatedObject is DashPanel && icons[event.relatedObject]) {
 				stopChIndex = true;
-				var index:int = container.getChildIndex(event.relatedObject);
-				//container.setChildIndex( icons[ event.relatedObject ],index  + 1);
+				var index:int = container.panels.getChildIndex(event.relatedObject);
+				container.setChildIndex(icons[event.relatedObject], index + 1);
 				stopChIndex = false;
 			}
 		}
@@ -807,10 +780,10 @@ package com.comtaste.pantaste.manager {
 		 * @param event:DashPanelEvent the DashPanel close event.
 		 */
 		protected function onClose(event:DashPanelEvent):void {
-			container.removeChild(event.panel);
+			container.removePanel(event.panel);
 			
-			if (icons[event.panel as DashPanel])
-				container.removeChild(icons[event.panel]);
+			/*if (icons[event.panel as DashPanel])
+			 container.removeElement(icons[event.panel]);*/
 			
 			delete icons[event.panel];
 			
@@ -819,8 +792,9 @@ package com.comtaste.pantaste.manager {
 					panelList.splice(i, 1);
 			}
 			
-			if (container.dashed)
+			if (container.dashed) {
 				tile();
+			}
 		}
 		
 		/**
@@ -829,6 +803,11 @@ package com.comtaste.pantaste.manager {
 		 *
 		 */
 		protected function onContainerComplete(event:FlexEvent):void {
+			container.panels.addEventListener(ElementExistenceEvent.ELEMENT_ADD, onElementAdd);
+			container.panels.addEventListener(ElementExistenceEvent.ELEMENT_REMOVE, function (event:ElementExistenceEvent){
+				trace("Element Remove: " + event.element);
+			});
+
 			if (container.dashed)
 				tile();
 			else
@@ -858,6 +837,26 @@ package com.comtaste.pantaste.manager {
 			if (container.dashed)
 				tile();
 		
+		}
+		
+		/**
+		 * Handler of the addition of the container to the stage.
+		 * @param event:ChildExistenceChangedEvent the event of changed existence of the container
+		 */
+		protected function onElementAdd(event:ElementExistenceEvent):void {
+			trace("Element Add: " + event.element);
+			if (!(event.element is DashPanel))
+				return;
+			
+			var panel:DashPanel;
+			panel = event.element as DashPanel;
+			
+			if (panelList.indexOf(panel) < 0) {
+				this.panelList.push(panel);
+				configurePanel(panel);
+			}
+			
+			addHandler();
 		}
 		
 		/**

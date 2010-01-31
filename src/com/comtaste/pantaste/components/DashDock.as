@@ -6,9 +6,9 @@
 package com.comtaste.pantaste.components
 {
 	import com.comtaste.pantaste.common.DashConstants;
+	import com.comtaste.pantaste.components.skins.DashDockSkin;
 	import com.comtaste.pantaste.events.DashPanelEvent;
 	import com.comtaste.pantaste.manager.DashLayoutManager;
-	import com.comtaste.pantaste.renderers.DashDockMenuItemRenderer;
 	import com.comtaste.pantaste.utilities.DashPanelAspectVO;
 	import com.comtaste.pantaste.utilities.StoredSessionVO;
 	
@@ -18,16 +18,15 @@ package com.comtaste.pantaste.components
 	import flash.utils.Dictionary;
 	
 	import mx.binding.utils.BindingUtils;
-	
-	import mx.controls.Button;
 	import mx.controls.Menu;
-	import mx.core.ClassFactory;
 	import mx.core.FlexGlobals;
+	import mx.events.FlexEvent;
 	import mx.events.MenuEvent;
 	import mx.managers.PopUpManager;
 	
+	import spark.components.Button;
 	import spark.components.Group;
-	import spark.components.HGroup;
+	import spark.components.SkinnableContainer;
 
 	/**
 	 * A DashDock object is the application bar of the related DashPanelContainer.
@@ -39,12 +38,13 @@ package com.comtaste.pantaste.components
 	 * @see com.comtaste.pantaste.components.DashPanel
 	 * @see com.comtaste.pantaste.components.DashPanelContainer
 	 */ 
-	public class DashDock extends Group
+	public class DashDock extends SkinnableContainer
 	{
 		/**
 		 * The DashPanelContainer which this DashDock refers to.
 		 */ 
-		private var container:DashPanelContainer;
+		public var container:DashPanelContainer;
+		
 		/**
 		 * Data structure to keep track of the minimized DashPanels.
 		 * <p>
@@ -57,12 +57,13 @@ package com.comtaste.pantaste.components
 		 * @see mx.controls.Button 
 		 * @see com.comtaste.pantaste.components.DashPanel
 		 */ 
-		private var dockedPanel:Dictionary;
+		private var minimizedDashPanels:Dictionary;
 		
 		/**
 		 * Horizontal box containing the Buttons representing the minimized DashPanels.
 		 */ 
-		private var minimisedPanelsBar:HGroup;
+		[SkinPart(required='true')]
+		public var minimisedPanelsBar:Group;
 		
 		/**
 		 * Start button
@@ -70,13 +71,15 @@ package com.comtaste.pantaste.components
 		 * <p>
 		 * 	The start button provides functionalities such as saving the status of the DashPanelContainer. 
 		 * </p>
-		 */ 
-		private var startButton:Button;
+		 */
+		[SkinPart(required='false')]
+		public var startButton:Button;
 		
 		/**
 		 * Start menu. It appears once pressed the Start Button.
 		 */ 
-		private var menu:Menu;
+		[SkinPart(required='false')]
+		public var menu:Menu;
 		
 
 		
@@ -167,40 +170,62 @@ package com.comtaste.pantaste.components
 		 * Constructor.
 		 * @param container:DashPanelContainer The DashPanelContainer this DashDock refers to.
 		 */ 
-		public function DashDock( container:DashPanelContainer )
+		public function DashDock()
 		{
 			super();
+			this.addEventListener(FlexEvent.PREINITIALIZE, onPreInitialize);
+			this.addEventListener(FlexEvent.INITIALIZE, onInitialize);
 			
-			this.container = container;
-			
+						
+			/*
 			minimisedPanelsBar = new HGroup();
 			minimisedPanelsBar.x = 10;
-			addElement( minimisedPanelsBar );
-			
+			addElement( minimisedPanelsBar )*/;
+		/*	
 			startButton = new Button( );
 			startButton.addEventListener( MouseEvent.CLICK , onStartClick );
 			startButton.label = "Start";
-			minimisedPanelsBar.addElement( startButton );
+			minimisedPanelsBar.addElement( startButton );*/
 			
-			BindingUtils.bindProperty( startButton, "visible", container, "showStartButton" );
-			BindingUtils.bindProperty( startButton, "includeInLayout", container, "showStartButton" );
 			
-			dockedPanel = new Dictionary();
 			
+			minimizedDashPanels = new Dictionary();
+			/*
 			menu = Menu.createMenu( this, null );
 			
 			
 			menu.variableRowHeight=true;
 			//menu.rowHeight = DashConstants.DEFAULT_MENUITEM_HEIGHT;
-			menu.itemRenderer = new ClassFactory(DashDockMenuItemRenderer);
-			menu.addEventListener( MenuEvent.ITEM_CLICK, onMenuClick );
-			menu.addEventListener( MenuEvent.MENU_SHOW, onMenuShow);
+			menu.itemRenderer = new ClassFactory(DashDockMenuItemRenderer);*/
+			
+			
 			remeberSO = SharedObject.getLocal("comComtastepantaste");
 			storedSession = new StoredSessionVO( );
 			if ( remeberSO && remeberSO.data && remeberSO.data["storedSession"] )
 			{
 				storedSession = remeberSO.data["storedSession"] as StoredSessionVO;
 				createMenuLoadWorkspace();
+			}
+		}
+		
+		protected function onPreInitialize(event:FlexEvent):void {
+			removeEventListener(FlexEvent.PREINITIALIZE, onPreInitialize);
+			setStyle('skinClass', com.comtaste.pantaste.components.skins.DashDockSkin);
+		}
+		
+		protected function onInitialize(event:FlexEvent):void {
+			
+		}
+		
+		override protected function partAdded(partName:String, instance:Object) : void {
+			trace("skinPartAdded: dock: " + partName);
+			if (instance == menu) {
+				menu.addEventListener( MenuEvent.ITEM_CLICK, onMenuClick );
+				menu.addEventListener( MenuEvent.MENU_SHOW, onMenuShow);
+			} else if (instance == startButton) {
+				startButton.addEventListener( MouseEvent.CLICK , onStartClick );
+				BindingUtils.bindProperty( startButton, "visible", container, "showStartButton" );
+				BindingUtils.bindProperty( startButton, "includeInLayout", container, "showStartButton" );
 			}
 		}
 		
@@ -216,7 +241,7 @@ package com.comtaste.pantaste.components
 		protected function restore( event:MouseEvent ) : void
 		{
 			//( dockedPanel[ event.target ] as DashPanel ).maximizeRestore( );
-			var panel:DashPanel = dockedPanel[ event.target ] as DashPanel;
+			var panel:DashPanel = minimizedDashPanels[ event.target ] as DashPanel;
 			
 			var restoredEvent:DashPanelEvent = new DashPanelEvent( DashPanelEvent.RESTORE, panel );
 				panel.dispatchEvent( restoredEvent );
@@ -237,9 +262,9 @@ package com.comtaste.pantaste.components
 		 */ 
 		public function addPanel( panel:DashPanel ) : void
 		{
-			for ( var key:Object in dockedPanel )
+			for ( var key:Object in minimizedDashPanels )
 			{
-				if ( dockedPanel[ key ] == panel )
+				if ( minimizedDashPanels[ key ] == panel )
 				{
 					return;
 				}
@@ -250,7 +275,7 @@ package com.comtaste.pantaste.components
 				theButton.width = 140;
 			theButton.styleName = "dockedButton";
 			theButton.label = panel.title;
-			dockedPanel[ theButton ] = panel;
+			minimizedDashPanels[ theButton ] = panel;
 			theButton.addEventListener( MouseEvent.CLICK, restore );
 			minimisedPanelsBar.addElement( theButton );
 		}
@@ -264,12 +289,12 @@ package com.comtaste.pantaste.components
 		 */ 
 		public function removePanel( panel:DashPanel ) : void
 		{
-			for ( var key:Object in dockedPanel )
+			for ( var key:Object in minimizedDashPanels )
 			{
-				if ( dockedPanel[ key ] == panel )
+				if ( minimizedDashPanels[ key ] == panel )
 				{
-					minimisedPanelsBar.removeChild( key as Button );
-					delete dockedPanel[ key ];
+					minimisedPanelsBar.removeElement( key as Button );
+					delete minimizedDashPanels[ key ];
 				}
 			}
 		}
@@ -281,7 +306,7 @@ package com.comtaste.pantaste.components
 		protected function onStartClick( event:MouseEvent ) : void
 		{
 			createMenuPanel();
-			menu.show( 10, this.y - 50 );
+			menu.show();
 		}
 		/**
 		 * Handler to the menu events on the menu Menu.
@@ -299,7 +324,7 @@ package com.comtaste.pantaste.components
 			if ( panel )
 			{
 				panel.dispatchEvent( new DashPanelEvent( DashPanelEvent.RESTORE, panel ));
-				DashLayoutManager.getManager( container.id ).bringToFront( event.item.panel );
+				DashLayoutManager.getManager( container ).bringToFront( event.item.panel );
 			}
 			
 			if ( event.item.label == "Save Workspace" )
@@ -354,7 +379,7 @@ package com.comtaste.pantaste.components
            	var detail:DashPanelAspectVO;
        		var panelRef:DashPanel;
        		
-       		var lm:DashLayoutManager = DashLayoutManager.getManager( container.id );
+       		var lm:DashLayoutManager = DashLayoutManager.getManager( container );
        		
        		var maxPanel:DashPanel;
        		
@@ -441,12 +466,12 @@ package com.comtaste.pantaste.components
 				minimizedMenuPanels.pop();
 			}
 			menuData[0].enabled = false;
-			for ( var key:Object in dockedPanel )
+			for ( var key:Object in minimizedDashPanels )
 			{
 				minimizedMenuPanels.push( { 
-											label : dockedPanel[ key ].title, 
-											icon : dockedPanel[ key ].icon, 
-											panel: dockedPanel[ key ]
+											label : minimizedDashPanels[ key ].title, 
+											icon : minimizedDashPanels[ key ].icon, 
+											panel: minimizedDashPanels[ key ]
 											 
 											
 										} );
@@ -460,7 +485,7 @@ package com.comtaste.pantaste.components
 				startedMenuPanels.pop();
 			}
 			
-			var startedPanels:Array = DashLayoutManager.getManager( container.id ).getOpenedPanelList();
+			var startedPanels:Array = DashLayoutManager.getManager( container ).getOpenedPanelList();
 			menuData[1].enabled = false;
 			for ( var y:int = 0; y < startedPanels.length; y++ )
 			{

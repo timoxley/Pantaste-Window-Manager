@@ -1,14 +1,3 @@
-/*
- * 
- * NOTA: il pannello dovrà avere atributo: multiState (booleano default false)
- * 		se è false il pannello può essere definito inline o come comp esterno e non ha particolari limiti o vincoli
- * 		se è true il pannello deve essere dfinito in un comp esterno, inline non è possibile, 
- * 		e deve definire gli stati MAXIMIZED e NORMAL che sono definiti dalle corrispondenti costanti da creare nella classe
- * 
- * 
- * 
- * 
- */
 package com.comtaste.pantaste.components
 {
 	import com.comtaste.pantaste.common.DashConstants;
@@ -21,13 +10,10 @@ package com.comtaste.pantaste.components
 	import flash.ui.ContextMenuItem;
 	
 	import mx.containers.VBox;
-	import mx.controls.Image;
-	import mx.controls.Label;
-	import mx.core.ScrollPolicy;
-	import mx.events.ChildExistenceChangedEvent;
 	import mx.skins.Border;
 	
 	import spark.components.Group;
+	import spark.events.ElementExistenceEvent;
 	
 	//--------------------------------------
 	//  Events
@@ -109,7 +95,8 @@ package com.comtaste.pantaste.components
 		 * The DashPanelTitleBar of this DashPanel.
 		 * @see com.comtaste.pantaste.components.DashPanelTitleBar  
 		 */
-		private var titleBar:DashPanelTitleBar;
+		//[SkinPart(required="true")]
+		public var titleBar:DashPanelTitleBar;
 		
 		/**
 		 * Title of this DashPanel.
@@ -133,14 +120,16 @@ package com.comtaste.pantaste.components
 		 *  similarly to most OSes window based graphical interfaces. 
 		 * </p> 
 		 */
-		private var resizer:Group;
+		//[SkinPart(required="true")]
+		public var resizer:Group;
 		
 		/* private var controls:DashPanelControls; */
 		
 		/**
 		 * Canvas on which are displayed the contents of the DashPanel.
 		 */
-		private var content:Group;
+		//[SkinPart(required="true")]
+		public var content:Group;
 
 		/**
 		 * If <code>true</code>, it is possible to maximize the DashPanel. Otherwise, it is not possible.
@@ -266,13 +255,13 @@ package com.comtaste.pantaste.components
 		{
 			super();
 			
-			imageLoading = new VBox( );
+			/*imageLoading = new VBox( );
 			imageLoading.setStyle( "verticalAlign", "middle" );
 			imageLoading.setStyle( "horizontalAlign", "center" );
 			imageLoading.percentHeight = 100;
-			imageLoading.percentWidth = 100;
+			imageLoading.percentWidth = 100;*/
 			
-			var label:Label = new Label( );
+			/*var label:Label = new Label( );
 				label.text = "Loading";
 				label.setStyle( "fontWeight", "bold" );
 				label.setStyle( "fontSize", 14 );
@@ -280,7 +269,7 @@ package com.comtaste.pantaste.components
 				
 			var imgLoading:Image = new Image( );
 				imgLoading.source = loading;
-			imageLoading.addChild( imgLoading );
+			imageLoading.addChild( imgLoading );*/
 			
 			
 			if ( !width ) width = DashConstants.DEFAULT_PANEL_WIDTH;
@@ -288,8 +277,8 @@ package com.comtaste.pantaste.components
 			
 			resizer = new Group();
 			
-			titleBar = new DashPanelTitleBar( this );
-			
+			titleBar = new DashPanelTitleBar();
+			titleBar.panel = this;
             var menuItemAlwaysInFront:ContextMenuItem = new ContextMenuItem("Always in Front");
             var menuItemRestore:ContextMenuItem = new ContextMenuItem("Restore");
             var menuItemMaximize:ContextMenuItem = new ContextMenuItem("Maximize");
@@ -321,7 +310,7 @@ package com.comtaste.pantaste.components
 /*			horizontalScrollPolicy = ScrollPolicy.OFF;
 			verticalScrollPolicy = ScrollPolicy.OFF;*/
 			
-			addEventListener( ChildExistenceChangedEvent.CHILD_ADD, onAddedOnStage );
+			addEventListener( ElementExistenceEvent.ELEMENT_ADD, onElementAdd );
 			
 			addEventListener( DashPanelEvent.STARTLOAD, startLoad );
 			addEventListener( DashPanelEvent.STOPLOAD, stopLoad );
@@ -369,7 +358,7 @@ package com.comtaste.pantaste.components
 		{
 			titleBar.addEventListener( MouseEvent.MOUSE_DOWN, onMouseDownTitleBar );
 			titleBar.addEventListener( MouseEvent.MOUSE_OVER, onMouseOverTitleBar );
-			titleBar.titleField.addEventListener( MouseEvent.MOUSE_OVER, onMouseOverTitleBar );
+			titleBar.addEventListener( MouseEvent.MOUSE_OVER, onMouseOverTitleBar );
 			titleBar.addEventListener( MouseEvent.MOUSE_OUT, restoreCursor );
 		}
 		
@@ -385,23 +374,23 @@ package com.comtaste.pantaste.components
 		}
 		
 		/**
-		 * Handler of the ChildExistenceChangedEvent.CHILD_ADD event.
+		 * Handler of the ElementExistenceEvent.ELEMENT_ADD event.
 		 */
-		protected function onAddedOnStage( event:ChildExistenceChangedEvent ) : void
+		protected function onElementAdd( event:ElementExistenceEvent) : void
 		{
 			if ( !contains( content ) )
 			{
-				addChild( content );
+				addElement( content );
 			}
 			
-			if ( ! ( event.relatedObject is Border || 
-						 event.relatedObject is DashPanelTitleBar || 
+			if ( ! ( event.element is Border || 
+						 event.element is DashPanelTitleBar || 
 						 /* event.relatedObject is DashPanelControls || */
-						 event.relatedObject === resizer ||
-						 event.relatedObject === content ||
-						 event.relatedObject === imageLoading ) )
+						 event.element === resizer ||
+						 event.element === content ||
+						 event.element === imageLoading ) )
 				{
-					content.addChild( event.relatedObject );
+					content.addElement( event.element );
 				}
 		}
 		
@@ -449,8 +438,11 @@ package com.comtaste.pantaste.components
 		 */
 		private function onMouseOverTitleBar( event:MouseEvent ) : void
 		{
-			if ( event.target.name != "contentPane" && ( event.target != event.currentTarget || status == MAXIMIZED ) ) return;
-			
+			trace("onMouseOverTitleBar" + event.currentTarget);
+
+			if ((!(event.currentTarget is DashPanelTitleBar)) || status == MAXIMIZED) {
+				return;	
+			}
 			cursorManager.removeCursor( currentCursorID );
 			currentCursorID = cursorManager.setCursor( moveCur, 2, -11, -13);
 		}
@@ -462,7 +454,9 @@ package com.comtaste.pantaste.components
 		 */
 		private function onMouseOverResizer( event:MouseEvent ) : void
 		{
-			if ( event.target != event.currentTarget || status == MAXIMIZED ) return;
+			if ((!(event.currentTarget is DashPanelTitleBar)) || status == MAXIMIZED) {
+				return;	
+			}
 			
 			cursorManager.removeCursor( currentCursorID );
 			currentCursorID = cursorManager.setCursor( resizerCur, 2, -9, -6);
@@ -487,7 +481,13 @@ package com.comtaste.pantaste.components
 		{
 			/* if ( event.buttonDown ) return; */
 			
-			if ( event.target.name != "contentPane" && event.target != event.currentTarget ) return;
+			/*if ( event.target.name != "contentPane" && event.target != event.currentTarget ) {
+				return;
+			} */
+			
+			if (!(event.currentTarget is DashPanelTitleBar)) {
+				return;
+			}
 			
 			if ( draggable )
 			{
@@ -558,20 +558,20 @@ package com.comtaste.pantaste.components
 		 */
 		private function configureIconContainer( ) : void
 		{
-			if ( !iconContainer )
+			/*if ( !iconContainer )
 			{
 				iconContainer = new Group( );
 				iconContainer.mouseChildren = false;
 				iconContainer.mouseEnabled = false; 
-/*				iconContainer.verticalScrollPolicy = ScrollPolicy.OFF
-				iconContainer.horizontalScrollPolicy = ScrollPolicy.OFF; */
+				iconContainer.verticalScrollPolicy = ScrollPolicy.OFF
+				iconContainer.horizontalScrollPolicy = ScrollPolicy.OFF; 
 			}
 			
 			if ( !contains( iconContainer ) )
 				titleBar.addChildAt( iconContainer, 0 );
 			
 			iconContainer.width = _titleXOffset;
-			iconContainer.percentHeight = 100;
+			iconContainer.percentHeight = 100;*/
 		}
 		
 		//--------------------------------------
@@ -610,7 +610,7 @@ package com.comtaste.pantaste.components
 		
 		public function set title( value:String ):void
 		{
-			titleBar.titleField.text = value;
+			titleBar.title.text = value;
 			_title = value;
 			
 			configureIconContainer( );
@@ -637,11 +637,11 @@ package com.comtaste.pantaste.components
 		[Bindable]
 		public function get titleColor():uint
 		{
-			return titleBar.titleField.getStyle( "color" );
+			return titleBar.title.getStyle( "color" );
 		}
 		public function set titleColor( value:uint ):void
 		{
-			titleBar.titleField.setStyle( "color", value );
+			titleBar.title.setStyle( "color", value );
 		}
 		
 
@@ -655,12 +655,12 @@ package com.comtaste.pantaste.components
 		 */
 		public function get showTitleText():Boolean
 		{
-			return titleBar.titleField.visible;
+			return titleBar.title.visible;
 		}
 		
 		public function set showTitleText( value:Boolean ):void
 		{
-			titleBar.titleField.visible = value;
+			titleBar.title.visible = value;
 		}
 		
 		
