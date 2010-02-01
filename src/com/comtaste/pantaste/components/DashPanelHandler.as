@@ -29,6 +29,12 @@ package com.comtaste.pantaste.components {
 	 * @see com.comtaste.pantaste.manager.DashLayoutManager
 	 */
 	public class DashPanelHandler extends Group {
+		
+		/**
+		 * Indicates the current cursor used by the CursorManager.
+		 */
+		private var currentCursorID:int = -1;
+		
 		/**
 		 * Move effect of this DashPanelHandler.
 		 */
@@ -272,9 +278,11 @@ package com.comtaste.pantaste.components {
 				
 				managerEvent = new DashManagerEvent(DashManagerEvent.PANEL_HANDLER_MOVING, this);
 				dispatchEvent(managerEvent);
+				
 			}
 			
 			if (isResizing && event.buttonDown) {
+				
 				var pt:Point = globalToLocal(new Point(event.stageX, event.stageY));
 				var xsize:Number = pt.x;
 				var ysize:Number = pt.y;
@@ -293,7 +301,7 @@ package com.comtaste.pantaste.components {
 				}
 				moveEffect = new Move();
 				moveEffect.target = this;
-				moveEffect.duration = 1;
+				moveEffect.duration = 100;
 				moveEffect.xTo = desiredPos.x;
 				moveEffect.yTo = desiredPos.y;
 				moveEffect.play();
@@ -306,7 +314,7 @@ package com.comtaste.pantaste.components {
 				}
 				resizeEffect = new Resize();
 				resizeEffect.target = this;
-				resizeEffect.duration = 1;
+				resizeEffect.duration = 100;
 				resizeEffect.heightTo = desiredSize.y;
 				resizeEffect.widthTo = desiredSize.x;
 				resizeEffect.play();

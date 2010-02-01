@@ -174,7 +174,6 @@ package com.comtaste.pantaste.components
 		{
 			super();
 			this.addEventListener(FlexEvent.PREINITIALIZE, onPreInitialize);
-			this.addEventListener(FlexEvent.INITIALIZE, onInitialize);
 			
 						
 			/*
@@ -211,10 +210,6 @@ package com.comtaste.pantaste.components
 		protected function onPreInitialize(event:FlexEvent):void {
 			removeEventListener(FlexEvent.PREINITIALIZE, onPreInitialize);
 			setStyle('skinClass', com.comtaste.pantaste.components.skins.DashDockSkin);
-		}
-		
-		protected function onInitialize(event:FlexEvent):void {
-			
 		}
 		
 		override protected function partAdded(partName:String, instance:Object) : void {

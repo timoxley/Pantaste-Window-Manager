@@ -20,16 +20,17 @@
 
 		<s:State name="disabled" />
 	</s:states>
+	<!-- hostComponent.getStyle('buttonSkinClass') == undefined || !(hostComponent.getStyle('buttonSkinClass')) ? hostComponent.getStyle('buttonSkinClass') : PanelControlsButtonSkin} -->
 
-	<s:Group>
+	<s:Group width="100%" height="100%">
 		<s:layout>
 			<s:HorizontalLayout />
 		</s:layout>
 
-		<s:Button id="minimizeButton" />
+		<s:Button id="minimizeButton" skinClass="{PanelControlsButtonSkin}" />
 
-		<s:Button id="maximizeRestoreButton" />
+		<s:Button id="maximizeRestoreButton" skinClass="{PanelControlsButtonSkin}" />
 
-		<s:Button id="closeButton" />
+		<s:Button id="closeButton" skinClass="{PanelControlsButtonSkin}" />
 	</s:Group>
 </s:SparkSkin>

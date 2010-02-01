@@ -37,6 +37,7 @@ package com.comtaste.pantaste.components {
 	 *
 	 * </p>
 	 */
+	[Style(name="panelCornerRadius",type="Number",format="Number",inherit="yes")]
 	public class DashPanelContainer extends SkinnableContainer {
 		
 		//----------------------------------------------------------

@@ -3,7 +3,17 @@
 			 xmlns:s="library://ns.adobe.com/flex/spark"
 			 xmlns:mx="library://ns.adobe.com/flex/halo"
 			 width="100%"
-			 height="100%">
+			 height="100%"
+			 xmlns:components="com.comtaste.pantaste.components.*"
+			 minHeight="{DashConstants.DEFAULT_MINIMUM_PANEL_HEIGHT}"
+			 minWidth="{DashConstants.DEFAULT_MINIMUM_PANEL_WIDTH}"
+			 clipAndEnableScrolling="true">
+	<fx:Script>
+		<![CDATA[
+			import com.comtaste.pantaste.common.DashConstants;
+		]]>
+	</fx:Script>
+
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -17,4 +27,45 @@
 
 		<s:State name="disabled" />
 	</s:states>
+
+	<s:Group width="100%" height="100%">
+		<s:Rect visible="true"
+				radiusX="10"
+				radiusY="10"
+				width="100%"
+				height="100%">
+			<s:fill>
+				<s:LinearGradient rotation="90">
+					<s:GradientEntry color="0xAAAAAA" />
+
+					<s:GradientEntry color="0x333333" />
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+	</s:Group>
+
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout>
+			</s:VerticalLayout>
+		</s:layout>
+
+		<components:DashPanelTitleBar id="titleBar" width="100%" panel="{hostComponent}" panelCornerRadius="10" />
+
+		<s:Group id="content" width="100%" height="100%" />
+	</s:Group>
+
+	<s:Group id="resizer"
+			 bottom="0"
+			 right="0"
+			 width="{DashConstants.DEFAULT_DASH_RESIZER_SIZE}"
+			 height="{DashConstants.DEFAULT_DASH_RESIZER_SIZE}"
+			 mouseEnabledWhereTransparent="true"
+			 mouseEnabled="true">
+		<s:Rect width="{DashConstants.DEFAULT_DASH_RESIZER_SIZE}" height="{DashConstants.DEFAULT_DASH_RESIZER_SIZE}">
+			<s:fill>
+				<s:SolidColor color="0x333333" />
+			</s:fill>
+		</s:Rect>
+	</s:Group>
 </s:SparkSkin>

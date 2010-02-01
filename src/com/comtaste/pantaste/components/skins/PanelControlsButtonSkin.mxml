@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:s="library://ns.adobe.com/flex/spark" xmlns:fx="http://ns.adobe.com/mxml/2009">
+	<fx:Metadata>[HostComponent("spark.components.Button")]</fx:Metadata>
+
+	<s:states>
+		<s:State name="up" />
+
+		<s:State name="over" />
+
+		<s:State name="down" />
+
+		<s:State name="disabled" />
+	</s:states>
+
+	<s:Group buttonMode="true"
+			 id="group1"
+			 y="0"
+			 x="5"
+			 alpha.disabled="0.5">
+		<s:Ellipse id="ellipse3"
+				   y="1"
+				   x="1"
+				   width="28"
+				   height="28">
+			<s:stroke>
+				<s:SolidColorStroke caps="none"
+									color="#1e1e1e"
+									joints="miter"
+									miterLimit="4"
+									weight="2" />
+			</s:stroke>
+
+			<s:fill>
+				<s:LinearGradient rotation="270">
+					<s:GradientEntry alpha="1.0" color="#305b24" ratio="0" />
+
+					<s:GradientEntry alpha="1.0" color="#8fc70d" ratio="1" />
+				</s:LinearGradient>
+			</s:fill>
+		</s:Ellipse>
+
+		<s:Ellipse alpha="1"
+				   blendMode="normal"
+				   height="19"
+				   id="ellipse4"
+				   width="22"
+				   x="4"
+				   y="2">
+			<s:fill>
+				<s:LinearGradient rotation="90">
+					<s:GradientEntry alpha="1.0" color="#b9db70" ratio="0" />
+
+					<s:GradientEntry alpha="0.0" color="#76b632" ratio="1" />
+				</s:LinearGradient>
+			</s:fill>
+		</s:Ellipse>
+	</s:Group>
+
+	<s:Ellipse alpha="0.66"
+			   blendMode="screen"
+			   id="ellipse1"
+			   includeIn="down,over,up"
+			   width="26"
+			   height="26"
+			   y="2"
+			   x="7"
+			   visible.up="false"
+			   visible.down="false">
+		<s:fill>
+			<s:LinearGradient rotation="270">
+				<s:GradientEntry alpha="1.0" color="#305b24" ratio="0" />
+
+				<s:GradientEntry alpha="1.0" color="#8fc70d" ratio="1" />
+			</s:LinearGradient>
+		</s:fill>
+	</s:Ellipse>
+
+	<s:Ellipse blendMode="darken"
+			   height="29"
+			   id="ellipse2"
+			   includeIn="down,over,up"
+			   width="29"
+			   y="1"
+			   x="6"
+			   visible.up="false"
+			   visible.over="false">
+		<s:fill>
+			<s:SolidColor alpha="0.4" color="#000000" />
+		</s:fill>
+	</s:Ellipse>
+
+	<s:RichText buttonMode="false"
+				color="#000000"
+				fontFamily="Arial"
+				fontSize="10"
+				id="labelDisplay0"
+				tabStops="S0 S50 S100 S150 S200"
+				text="{hostComponent.label}"
+				textAlign="center"
+				y="33"
+				height="10"
+				width="40"
+				x="0" />
+
+	<s:transitions>
+		<s:Transition autoReverse="true" fromState="up" toState="over">
+			<s:Parallel>
+				<s:Parallel target="{ellipse1}">
+					<s:Fade duration="200" startDelay="0" />
+				</s:Parallel>
+			</s:Parallel>
+		</s:Transition>
+
+		<s:Transition fromState="over" toState="up" autoReverse="true">
+			<s:Parallel>
+				<s:Parallel target="{ellipse1}">
+					<s:Fade duration="150" startDelay="50" />
+				</s:Parallel>
+			</s:Parallel>
+		</s:Transition>
+
+		<s:Transition fromState="down" toState="up" autoReverse="true">
+			<s:Parallel>
+				<s:Parallel target="{ellipse2}">
+					<s:Fade duration="100" />
+				</s:Parallel>
+			</s:Parallel>
+		</s:Transition>
+
+		<s:Transition fromState="disabled" toState="up" autoReverse="true">
+			<s:Parallel>
+				<s:Parallel target="{group1}">
+					<s:Fade duration="100" startDelay="0" />
+				</s:Parallel>
+			</s:Parallel>
+		</s:Transition>
+	</s:transitions>
+</s:Skin>

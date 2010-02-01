@@ -10,6 +10,7 @@ package com.comtaste.pantaste.components {
 	 * The instances of this class are title bars for the DashPanel instance they refer to.
 	 * @see com.comtaste.pantaste.components.DashPanel
 	 */
+	[Style(name="panelCornerRadius",type="Number",format="Number",inherit="yes")]
 	public class DashPanelTitleBar extends SkinnableContainer implements IDashPanelElement {
 		
 		//----------------------------------------------------------
@@ -26,25 +27,7 @@ package com.comtaste.pantaste.components {
 		public function DashPanelTitleBar() {
 			super();
 			mouseEnabled = true;
-			
 			this.addEventListener(FlexEvent.PREINITIALIZE, onPreInitialize);
-			
-		/* height = 25; */
-		/*titleField = new Label();
-		   titleField.truncateToFit = true;
-		 titleField.percentWidth = 100;*/
-		/* titleField.percentHeight = 100; */
-			//titleField.styleName = "titleBarText"
-		/*verticalScrollPolicy = ScrollPolicy.OFF;
-		 horizontalScrollPolicy = ScrollPolicy.OFF; */
-		/*
-		   titleField.mouseEnabled = false;
-		   titleField.mouseChildren = false;
-		
-		   controls = new DashPanelControls( panel );
-		   controls.percentHeight = 100;
-		   setStyle("verticalAlign", "middle");
-		 setStyle("paddingRight", 5);*/
 		}
 		
 		//----------------------------------------------------------
@@ -60,8 +43,19 @@ package com.comtaste.pantaste.components {
 		[SkinPart(required="true")]
 		public var controls:DashPanelControls;
 		
+		
+		private var _panel:DashPanel;
 		[Bindable]
-		public var panel:DashPanel;
+		public function get panel():DashPanel
+		{
+			return _panel;
+		}
+
+		public function set panel(value:DashPanel):void
+		{
+			_panel = value;
+		}
+
 		
 		/**
 		 * Label showing the title of the related DashPanel.

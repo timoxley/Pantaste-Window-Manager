@@ -291,12 +291,13 @@ package com.comtaste.pantaste.manager {
 		 * @param element:UIComponent The component to be brought to front.
 		 */
 		public function bringToFront(element:UIComponent):void {
+			trace("Bring to front:" + element);
 			if (element && container.panels.contains(element)) {
 				if (container.panels.getElementIndex(element) !=  container.numChildren - 1) {
 					container.panels.setElementIndex(element, container.numChildren - 1);
 				}
 				
-				
+				//container.panels.
 				/*if (element is DashPanel) {
 					if (icons[element])
 						bringToFront(icons[element]);
@@ -676,7 +677,7 @@ package com.comtaste.pantaste.manager {
 			panel.addEventListener(DashPanelEvent.RESTORE, onRestore);
 			panel.addEventListener(DashPanelEvent.CLOSE, onClose);
 			
-			panel.addEventListener(MouseEvent.CLICK, onFocusPanel);
+			panel.addEventListener(MouseEvent.MOUSE_DOWN, onFocusPanel);
 		}
 		
 		/**
@@ -844,7 +845,6 @@ package com.comtaste.pantaste.manager {
 		 * @param event:ChildExistenceChangedEvent the event of changed existence of the container
 		 */
 		protected function onElementAdd(event:ElementExistenceEvent):void {
-			trace("Element Add: " + event.element);
 			if (!(event.element is DashPanel))
 				return;
 			
@@ -864,6 +864,7 @@ package com.comtaste.pantaste.manager {
 		 * @param event:MouseEvent The MouseEvent over the target DashPanel
 		 */
 		protected function onFocusPanel(event:MouseEvent):void {
+			trace("onFocusPanel");
 			if (event.currentTarget is DashPanel) {
 				bringToFront(event.currentTarget as DashPanel);
 				/* bringToFront( handler ); */
@@ -1092,7 +1093,7 @@ package com.comtaste.pantaste.manager {
 		 * @param panel:DashPanel The panel whose icon has to be positioned
 		 */
 		protected function setIconPostion(panel:DashPanel):void {
-			if (icons[panel] == null)
+			/*if (icons[panel] == null)
 				return;
 			
 			var icona:Image = icons[panel];
@@ -1102,7 +1103,7 @@ package com.comtaste.pantaste.manager {
 			
 			panel.titleXOffset = icona.contentWidth;
 			
-			bringToFront(icona);
+			bringToFront(icona);*/
 		}
 		
 		//----------------------------------------------------------

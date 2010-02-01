@@ -27,6 +27,8 @@ package com.comtaste.pantaste.components {
 	 * @see com.comtaste.pantaste.components.DashDock DashDock
 	 * @see com.comtaste.pantaste.components.DashPanel DashPanel
 	 */
+	
+	[Style(name="buttonSkinClass",type="Class",format="Class",inherit="yes")]
 	public class DashPanelControls extends SkinnableContainer implements IDashPanelElement {
 		
 		//----------------------------------------------------------
@@ -44,7 +46,6 @@ package com.comtaste.pantaste.components {
 			super();
 
 			addEventListener(FlexEvent.PREINITIALIZE, onPreInitialize);
-		
 		}
 		
 		//----------------------------------------------------------
@@ -77,8 +78,20 @@ package com.comtaste.pantaste.components {
 		/**
 		 * Reference to the relative DashPanel
 		 */
+		
+		private var _panel:DashPanel;
+		
 		[Bindable]
-		public var panel:DashPanel;
+		public function get panel():DashPanel
+		{
+			return _panel;
+		}
+
+		public function set panel(value:DashPanel):void
+		{
+			_panel = value;
+		}
+
 		
 		//----------------------------------------------------------
 		//
@@ -165,6 +178,9 @@ package com.comtaste.pantaste.components {
 		 * @see #closeButton
 		 */
 		override protected function partAdded(partName:String, instance:Object):void {
+			if (!panel) {
+				throw new Error("Dependency: 'panel' required.");
+			}
 			if (instance == minimizeButton) {
 				BindingUtils.bindProperty(minimizeButton, "visible", panel, "minimizable");
 				BindingUtils.bindProperty(minimizeButton, "includeInLayout", panel, "minimizable");

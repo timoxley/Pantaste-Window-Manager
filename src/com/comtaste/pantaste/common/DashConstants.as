@@ -11,7 +11,7 @@ package com.comtaste.pantaste.common
 		 * Defines the default DashPanel width.
 		 * @see com.comtaste.pantaste.components.pantaste
 		 */ 
-		public static const DEFAULT_PANEL_WIDTH:Number = 300;
+		public static const DEFAULT_PANEL_WIDTH:Number = 500;
 		
 		/**
 		 * Defines the default DashPanel height.
@@ -45,7 +45,7 @@ package com.comtaste.pantaste.common
 		 * Width and height of the resizer.
 		 * @see com.comtaste.pantaste.components.DashPanel 
 		 */
-		public static const DEFAULT_DASH_RESIZER_SIZE:Number = 10;
+		public static const DEFAULT_DASH_RESIZER_SIZE:Number = 20;
 		
 		/**
 		 * Minimum height of a dashpanel.
@@ -67,5 +67,18 @@ package com.comtaste.pantaste.common
 		 * Default show start button value = True.
 		 */ 
 		public static const DEFAULT_SHOW_START_BUTON:Boolean = true;
+		
+		
+		/**
+		 * Move cursor.
+		 */
+		[Embed("/assets/cursors/move.png")]
+		public static const moveCur:Class;
+		
+		/**
+		 * Resize cursor.
+		 */
+		[Embed("/assets/cursors/resize-l.png")]
+		public static const resizerCur:Class;
 	}
 }
