@@ -55,7 +55,7 @@
 		<s:Group id="content" width="100%" height="100%" />
 	</s:Group>
 
-	<s:Group id="resizer"
+	<s:Group id="resizeHandle"
 			 bottom="0"
 			 right="0"
 			 width="{DashConstants.DEFAULT_DASH_RESIZER_SIZE}"

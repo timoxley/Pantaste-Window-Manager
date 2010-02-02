@@ -19,12 +19,12 @@ package com.comtaste.pantaste.events
 		/**
 		 * Defines the value of the type property of a beginning of a dragging event. 
 		 */ 
-		public static const PANEL_TITLE_OVER:String = "panelTitleOver";
+		public static const PANEL_TITLE_ACTION:String = "panelTitleAction";
 
 		/**
 		 * Defines the value of the type property of a beginning of a dragging event. 
 		 */
-		public static const PANEL_RESIZER_OVER:String = "panelResizerOver";
+		public static const PANEL_RESIZER_ACTION:String = "panelResizerOver";
 		
 		/**
 		 * Defines the value of the type property of a panel selection event.

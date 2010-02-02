@@ -1,4 +1,6 @@
 package com.comtaste.pantaste.components {
+	import com.comtaste.pantaste.behaviours.MoveBehaviour;
+	import com.comtaste.pantaste.behaviours.ResizeBehaviour;
 	import com.comtaste.pantaste.common.DashConstants;
 	import com.comtaste.pantaste.components.skins.DashPanelSkin;
 	import com.comtaste.pantaste.events.DashPanelEvent;
@@ -81,6 +83,8 @@ package com.comtaste.pantaste.components {
 		//
 		//----------------------------------------------------------
 		
+		private var moveBehaviour:MoveBehaviour;
+		private var resizeBehaviour:ResizeBehaviour;
 		/**
 		 * Constructor.
 		 */
@@ -228,7 +232,7 @@ package com.comtaste.pantaste.components {
 		 * </p>
 		 */
 		[SkinPart(required="true")]
-		public var resizer:Group;
+		public var resizeHandle:Group;
 		
 		/**
 		 * Keeps track of the height of this DashPanel.
@@ -337,8 +341,6 @@ package com.comtaste.pantaste.components {
 		 */
 		protected var loading:Class;
 		
-		
-		
 		//----------------------------------------------------------
 		//
 		//   Private Properties 
@@ -400,9 +402,9 @@ package com.comtaste.pantaste.components {
 		 * @see #resizer
 		 */
 		protected function addResizerListeners():void {
-			resizer.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDownResizer);
+			/*resizer.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDownResizer);
 			resizer.addEventListener(MouseEvent.MOUSE_OVER, onMouseOverResizer);
-			resizer.addEventListener(MouseEvent.MOUSE_OUT, restoreCursor);
+			resizer.addEventListener(MouseEvent.MOUSE_OUT, restoreCursor);*/
 		}
 		
 		/**
@@ -410,10 +412,12 @@ package com.comtaste.pantaste.components {
 		 * @see #titleBar
 		 */
 		protected function addTitleBarListeners():void {
-			titleBar.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDownTitleBar);
+			moveBehaviour = new MoveBehaviour(MouseEvent.MOUSE_DOWN, this, titleBar);
+			resizeBehaviour = new ResizeBehaviour(MouseEvent.MOUSE_DOWN, this, resizeHandle);
+			/*titleBar.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDownTitleBar);
 			titleBar.addEventListener(MouseEvent.MOUSE_OVER, onMouseOverTitleBar);
 			titleBar.addEventListener(MouseEvent.MOUSE_OVER, onMouseOverTitleBar);
-			titleBar.addEventListener(MouseEvent.MOUSE_OUT, restoreCursor);
+			titleBar.addEventListener(MouseEvent.MOUSE_OUT, restoreCursor);*/
 		}
 		
 		/**
@@ -498,7 +502,7 @@ package com.comtaste.pantaste.components {
 		override protected function partAdded(partName:String, instance:Object):void {
 			if (instance == titleBar) {
 				addTitleBarListeners();
-			} else if (instance == resizer) {
+			} else if (instance == resizeHandle) {
 				addResizerListeners();
 			}
 		
@@ -575,14 +579,14 @@ package com.comtaste.pantaste.components {
 		private function onMouseDownResizer(event:MouseEvent):void {
 			/* if ( event.buttonDown ) return; */
 			
-			if (event.target != event.currentTarget  || status == MAXIMIZED) {
+			if (event.target != event.currentTarget || status == MAXIMIZED) {
 				return;
 			}
 			
 			if (resizable) {
-				dispatchEvent(new DashPanelEvent(DashPanelEvent.PANEL_RESIZER_OVER, this));
+				dispatchEvent(new DashPanelEvent(DashPanelEvent.PANEL_RESIZER_ACTION, this));
 			}
-			
+		
 		}
 		
 		/**
@@ -603,7 +607,7 @@ package com.comtaste.pantaste.components {
 			}
 			
 			if (draggable) {
-				dispatchEvent(new DashPanelEvent(DashPanelEvent.PANEL_TITLE_OVER, this));
+				dispatchEvent(new DashPanelEvent(DashPanelEvent.PANEL_TITLE_ACTION, this));
 			}
 		}
 		
@@ -618,7 +622,7 @@ package com.comtaste.pantaste.components {
 			}
 			
 			cursorManager.removeCursor(currentCursorID);
-			currentCursorID = cursorManager.setCursor(DashConstants.resizerCur, 2, 0, 0);
+			currentCursorID = cursorManager.setCursor(DashConstants.resizeCursor, 2, 0, 0);
 		}
 		
 		/**
@@ -631,7 +635,7 @@ package com.comtaste.pantaste.components {
 				return;
 			}
 			cursorManager.removeCursor(currentCursorID);
-			currentCursorID = cursorManager.setCursor(DashConstants.moveCur, 2, -11, -13);
+			currentCursorID = cursorManager.setCursor(DashConstants.moveCursor, 2, -11, -13);
 		}
 		
 		/**
@@ -641,7 +645,7 @@ package com.comtaste.pantaste.components {
 		private function onPreInitialize(event:FlexEvent):void {
 			removeEventListener(FlexEvent.PREINITIALIZE, onPreInitialize);
 			setStyle('skinClass', com.comtaste.pantaste.components.skins.DashPanelSkin);
-		
+			
 		}
 		
 		/**
@@ -658,7 +662,8 @@ package com.comtaste.pantaste.components {
 		 * @param event:MouseEvent the related MouseEvent
 		 */
 		private function restoreCursor(event:MouseEvent):void {
-			cursorManager.removeCursor(currentCursorID);
+			
+			cursorManager.removeAllCursors();
 		}
 		
 		/**

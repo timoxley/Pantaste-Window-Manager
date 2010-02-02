@@ -15,7 +15,6 @@ package com.comtaste.pantaste.manager {
 	import flash.utils.Dictionary;
 	import flash.utils.setTimeout;
 	
-	import mx.controls.Image;
 	import mx.core.Application;
 	import mx.core.IFlexDisplayObject;
 	import mx.core.UIComponent;
@@ -194,17 +193,17 @@ package com.comtaste.pantaste.manager {
 		/**
 		 * The DashPanelHandler.
 		 */
-		protected var handler:DashPanelHandler;
+		//protected var handler:DashPanelHandler;
 		
 		/**
 		 * Indicates whether the handler has been moved (true) or not (false).
 		 */
-		protected var handlerMoved:Boolean = false;
+		//protected var handlerMoved:Boolean = false;
 		
 		/**
 		 * Indicates whether the handler has been resized (true) or not (false).
 		 */
-		protected var handlerResized:Boolean = false;
+		//protected var handlerResized:Boolean = false;
 		
 		/**
 		 * The currently selected panel.
@@ -291,10 +290,13 @@ package com.comtaste.pantaste.manager {
 		 * @param element:UIComponent The component to be brought to front.
 		 */
 		public function bringToFront(element:UIComponent):void {
-			trace("Bring to front:" + element);
+			if (element is DashPanel) {
+				trace("Bring to front:" + element);
+			}
+			
 			if (element && container.panels.contains(element)) {
-				if (container.panels.getElementIndex(element) !=  container.numChildren - 1) {
-					container.panels.setElementIndex(element, container.numChildren - 1);
+				if (container.panels.getElementIndex(element) !=  container.panels.numElements - 1) {
+					container.panels.setElementIndex(element, container.panels.numElements - 1);
 				}
 				
 				//container.panels.
@@ -470,28 +472,29 @@ package com.comtaste.pantaste.manager {
 		 * @param event:MouseEvent the related MouseEvent.MOUSE_OVER type event
 		 */
 		protected function activateHandler(event:MouseEvent):void {
-			container.stage.addEventListener(MouseEvent.MOUSE_UP, finishWork);
+			/*container.stage.addEventListener(MouseEvent.MOUSE_UP, finishWork);
 			handler.removeEventListener(MouseEvent.MOUSE_OVER, activateHandler);
 			handler.setStyle("backgroundColor", 0x000000);
 			container.mouseChildren = false
 			var imageSnap:ImageSnapshot = ImageSnapshot.captureImage(selectedPanel);
 			var imageByteArray:ByteArray = imageSnap.data as ByteArray;
-			
+			handler.setSnapshot(imageByteArray);
 			container.mouseChildren = false;
 			
-			handler.setSnapshot(imageByteArray);
 			
-			handler.alpha = .3;
+			//handler.visible = false;
+			handler.alpha = 0.3;
 			handler.x = selectedPanel.x;
 			handler.y = selectedPanel.y;
 			handler.height = selectedPanel.height;
 			handler.width = selectedPanel.width;
-			bringToFront(selectedPanel);
+			//bringToFront(selectedPanel);
 			
-			if (icons[selectedPanel])
-				bringToFront(icons[selectedPanel]);
-			
-			bringToFront(handler);
+			/*if (icons[selectedPanel])
+				bringToFront(icons[selectedPanel]);*/
+		//	trace("selected panel: " + selectedPanel + "\n x: " + selectedPanel.x + " y:" + selectedPanel.y + "\n\n");
+		//	trace("Bringing handler to front!");
+			//bringToFront(handler);*/
 		}
 		
 		/**
@@ -532,7 +535,7 @@ package com.comtaste.pantaste.manager {
 		 * @see com.comtaste.pantaste.components.DashLayoutHandler
 		 */
 		protected function addHandler():void {
-			if (!handler) {
+			/*if (!handler) {
 				handler = new DashPanelHandler();
 				handler.visible = false;
 				SparkSkin(container.skin).addElement(handler);
@@ -543,8 +546,8 @@ package com.comtaste.pantaste.manager {
 									 applyConstraintOnResize);
 			handler.addEventListener(MouseEvent.MOUSE_OVER, activateHandler);
 			/* handler.addEventListener( MouseEvent.MOUSE_OUT, destroyHandler ); */
-			handler.addEventListener(MouseEvent.MOUSE_UP, destroyHandler);
-			bringToFront(handler);
+			//handler.addEventListener(MouseEvent.MOUSE_UP, destroyHandler);
+			//bringToFront(handler);*/
 		}
 		
 		/**
@@ -552,7 +555,7 @@ package com.comtaste.pantaste.manager {
 		 *  Apply constraint after a dashPanelEvent to respect panel parameters
 		 */
 		protected function applyConstraint(moved:Boolean=false, resized:Boolean=false):void {
-			if (container.dashed && !handler.resizer) {
+			/*if (container.dashed && !handler.mode == DashPanelHandler.MODE_RESIZE) {
 				if (candidatePanel == null)
 					return;
 				
@@ -598,17 +601,17 @@ package com.comtaste.pantaste.manager {
 				selectedPanel.x = handler.x;
 				selectedPanel.y = handler.y;
 				
-				if (handler.resizer) {
+				if (handler.mode == DashPanelHandler.MODE_RESIZE) {
 					selectedPanel.width = handler.width;
 					selectedPanel.height = handler.height;
 				}
-			}
+				}
 			
-			setIconPostion(selectedPanel);
+		//	setIconPostion(selectedPanel);
 			
 			// generate dash container event
 			this.container.generatepantasteChangeEvent(DashPanelContainer.PANEL_MOVED,
-													   selectedPanel);
+													   selectedPanel);*/
 		}
 		
 		/**
@@ -664,10 +667,13 @@ package com.comtaste.pantaste.manager {
 			   createIcon( panel );
 			 }*/
 			
-			panel.addEventListener("iconChanged", onIcon);
+			//panel.addEventListener("iconChanged", onIcon);
 			
-			panel.addEventListener(DashPanelEvent.PANEL_TITLE_OVER, prepareHandler);
-			panel.addEventListener(DashPanelEvent.PANEL_RESIZER_OVER, prepareHandler);
+			//panel.addEventListener(DashPanelEvent.PANEL_TITLE_ACTION, prepareHandler);
+			//panel.addEventListener(DashPanelEvent.PANEL_RESIZER_ACTION, prepareHandler);
+			///DashPanelEvent.PANEL_TITLE_ACTION
+			
+			
 			
 			panel.addEventListener(FlexEvent.SHOW, onPanelShowHide);
 			panel.addEventListener(FlexEvent.HIDE, onPanelShowHide);
@@ -717,18 +723,18 @@ package com.comtaste.pantaste.manager {
 		 * @param event:MouseEvent The MouseEvent handled
 		 */
 		protected function destroyHandler(event:MouseEvent):void {
-			if (event.buttonDown)
+			/*if (event.buttonDown)
 				return;
 			
-			if (handler.resizer) {
+			if (handler.mode == DashPanelHandler.MODE_RESIZE) {
 				dispatchEvent(new DashPanelEvent(DashPanelEvent.PANEL_RESIZE_STOP, selectedPanel));
 			} else {
 				dispatchEvent(new DashPanelEvent(DashPanelEvent.PANEL_MOVE_STOP, selectedPanel));
 			}
-			handler.resizer = false;
+			handler.mode == DashPanelHandler.MODE_IDLE;
 			handler.visible = false;
 			handler.setStyle("backgroundColor", null);
-			container.mouseChildren = true;
+			container.mouseChildren = true;*/
 		}
 		
 		/**
@@ -737,13 +743,13 @@ package com.comtaste.pantaste.manager {
 		 * @param event:MouseEvent the related MouseEvent.MOUSE_UP type event
 		 */
 		protected function finishWork(event:MouseEvent):void {
-			if (event.buttonDown) {
+			/*if (event.buttonDown) {
 				return;
 			}
 			applyConstraint(handlerMoved, handlerResized);
 			container.stage.removeEventListener(MouseEvent.MOUSE_UP, finishWork);
 			destroyHandler(event);
-			handler.addEventListener(MouseEvent.MOUSE_OVER, activateHandler);
+			handler.addEventListener(MouseEvent.MOUSE_OVER, activateHandler);*/
 		}
 		
 		/**
@@ -847,7 +853,7 @@ package com.comtaste.pantaste.manager {
 		protected function onElementAdd(event:ElementExistenceEvent):void {
 			if (!(event.element is DashPanel))
 				return;
-			
+			//trace("onElementAdd: " + event.element);
 			var panel:DashPanel;
 			panel = event.element as DashPanel;
 			
@@ -1057,35 +1063,37 @@ package com.comtaste.pantaste.manager {
 		 * @param event:DashPanelEvent
 		 */
 		protected function prepareHandler(event:DashPanelEvent):void {
-			var panel:DashPanel = event.panel as DashPanel;
+			/*var panel:DashPanel = event.panel as DashPanel;
 			
 			if (panel.status == DashPanel.MAXIMIZED ||
-				(event.type == DashPanelEvent.PANEL_RESIZER_OVER && container.dashed))
+				(event.type == DashPanelEvent.PANEL_RESIZER_ACTION && container.dashed))
 				return;
 			
 			handler.visible = true;
 			bringToFront(handler);
 			selectedPanel = panel;
 			
-			if (event.type == DashPanelEvent.PANEL_TITLE_OVER) {
+			if (event.type == DashPanelEvent.PANEL_TITLE_ACTION) {
 				dispatchEvent(new DashPanelEvent(DashPanelEvent.PANEL_MOVE_START, selectedPanel));
-				handler.resizer = false;
+				handler.mode = DashPanelHandler.MODE_MOVE;
 				handler.width = panel.width;
 				handler.height = 35;
 				handler.x = panel.x;
 				handler.y = panel.y;
 				handlerMoved = true;
 				handlerResized = false;
-			} else if (event.type == DashPanelEvent.PANEL_RESIZER_OVER) {
+				
+				trace("prepareHandler " + "MODE_MOVE");
+			} else if (event.type == DashPanelEvent.PANEL_RESIZER_ACTION) {
 				dispatchEvent(new DashPanelEvent(DashPanelEvent.PANEL_RESIZE_START, selectedPanel));
-				handler.resizer = true;
+				handler.mode = DashPanelHandler.MODE_RESIZE;
 				handler.width = 10;
 				handler.height = 10;
 				handler.x = panel.width + panel.x - 10;
 				handler.y = panel.height + panel.y - 10;
 				handlerMoved = false;
 				handlerResized = true;
-			}
+			}*/
 		}
 		
 		/**
@@ -1122,7 +1130,7 @@ package com.comtaste.pantaste.manager {
 		 */
 		private function constructEffect(panel:DashPanel, xTo:Number, yTo:Number, widthTo:Number,
 										 heightTo:Number, parallel:Parallel):void {
-			if (icons[panel] != null) {
+			/*if (icons[panel] != null) {
 				var iconMoveEffect:Move = new Move(icons[panel]);
 				iconMoveEffect.xFrom = icons[panel].x;
 				iconMoveEffect.yFrom = icons[panel].y;
@@ -1130,7 +1138,7 @@ package com.comtaste.pantaste.manager {
 				iconMoveEffect.yTo = yTo + panel.iconYOffset;
 				parallel.addChild(iconMoveEffect);
 			}
-			
+			*/
 			var moveEffect:Move = new Move(panel);
 			moveEffect.xFrom = panel.x;
 			moveEffect.yFrom = panel.y;

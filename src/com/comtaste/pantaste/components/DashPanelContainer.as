@@ -1,5 +1,5 @@
 package com.comtaste.pantaste.components {
-	
+	import com.comtaste.pantaste.behaviours.MoveBehaviour;
 	import com.comtaste.pantaste.common.DashConstants;
 	import com.comtaste.pantaste.components.skins.DashPanelContainerSkin;
 	import com.comtaste.pantaste.events.DashPanelContainerEvent;
@@ -14,8 +14,7 @@ package com.comtaste.pantaste.components {
 	import spark.components.Group;
 	import spark.components.SkinnableContainer;
 	import spark.events.ElementExistenceEvent;
-	
-	
+
 	/**
 	 * Dispatched when some change occours in sub panels
 	 * moved
@@ -39,12 +38,13 @@ package com.comtaste.pantaste.components {
 	 */
 	[Style(name="panelCornerRadius",type="Number",format="Number",inherit="yes")]
 	public class DashPanelContainer extends SkinnableContainer {
-		
+
 		//----------------------------------------------------------
 		//
 		//   Static Properties 
 		//
 		//----------------------------------------------------------
+
 		
 		/**
 		 * Constant defining the type of change event of adding a DashPanel.
@@ -75,12 +75,13 @@ package com.comtaste.pantaste.components {
 		 * Constant defining the type of change event of restoring a DashPanel.
 		 */
 		public static const PANEL_RESTORED:String = "pantastePanelRestored";
-		
+
 		//----------------------------------------------------------
 		//
 		//   Constructor 
 		//
 		//----------------------------------------------------------
+
 		
 		/**
 		 * Constructor.
@@ -97,19 +98,14 @@ package com.comtaste.pantaste.components {
 			layoutManager = DashLayoutManager.getManager(this);
 		
 		}
-		
+
+
 		//----------------------------------------------------------
 		//
 		//    Public Properties 
 		//
 		//----------------------------------------------------------
-		
-		/**
-		 * Group that contains the actual DashPanels
-		 */
-		[SkinPart(required='true')]
-		public var panels:Group;
-		
+
 		/**
 		 * The available height to place the DashPanels.
 		 */
@@ -119,10 +115,11 @@ package com.comtaste.pantaste.components {
 		 * The available width to place the DashPanels.
 		 */
 		public var availWidth:Number;
-		
+
 		//--------------------------------------
 		// cascadeSize 
 		//--------------------------------------
+
 		
 		/**
 		 * Vertical and horizontal offset when cascading the DashPanels.
@@ -140,10 +137,11 @@ package com.comtaste.pantaste.components {
 		public function set cascadeSize(value:Number):void {
 			_cascadeSize = value;
 		}
-		
+
 		//--------------------------------------
 		// dashed 
 		//--------------------------------------
+
 		
 		/**
 		 * Indicates whether the container area is dashed.
@@ -165,10 +163,11 @@ package com.comtaste.pantaste.components {
 			}
 			_dashed = value;
 		}
-		
+
 		//--------------------------------------
 		// dock 
 		//--------------------------------------
+
 		
 		/**
 		 * Reference to this DashPanelContainer's DashDock bar.
@@ -193,9 +192,16 @@ package com.comtaste.pantaste.components {
 		[SkinPart(required='true')]
 		public var grid:Sprite;
 		
+		/**
+		 * Group that contains the actual DashPanels
+		 */
+		[SkinPart(required='true')]
+		public var panels:Group;
+
 		//--------------------------------------
 		// showStartButton 
 		//--------------------------------------
+
 		
 		/**
 		 * Vertical and horizontal offset when cascading the DashPanels.
@@ -213,10 +219,11 @@ package com.comtaste.pantaste.components {
 		public function set showStartButton(value:Boolean):void {
 			_showStartButton = value;
 		}
-		
+
 		//--------------------------------------
 		// snapSize 
 		//--------------------------------------
+
 		
 		/**
 		 * Side length of each square cell of the snap grid.
@@ -235,10 +242,11 @@ package com.comtaste.pantaste.components {
 			_snapSize = value;
 			updateDisplayList(unscaledWidth, unscaledHeight);
 		}
-		
+
 		//--------------------------------------
 		// snapped 
 		//--------------------------------------
+
 		
 		/**
 		 * Indicates whether there exists a snap grid in the container area.
@@ -259,24 +267,33 @@ package com.comtaste.pantaste.components {
 			_snapped = value;
 			updateDisplayList(unscaledWidth, unscaledHeight);
 		}
-		
+
 		//----------------------------------------------------------
 		//
 		//    Protected Properties 
 		//
 		//----------------------------------------------------------
+
 		
 		/**
 		 * Reference to this DashPanelContainer's DashLayoutManager.
 		 * @see com.comtaste.pantaste.manager.DashLayoutManager
 		 */
 		protected var layoutManager:DashLayoutManager;
-		
+
+
 		//----------------------------------------------------------
 		//
 		//   Public Functions 
 		//
 		//----------------------------------------------------------
+
+		public function addPanel(panel:DashPanel):void {
+			
+			
+			this.panels.addElement(panel);
+			
+		}
 		
 		/**
 		 * Dispatches the DashPanelContainerEvent related to a change in the content of the DashPanelContainer
@@ -288,21 +305,17 @@ package com.comtaste.pantaste.components {
 													  this, changeType, panel));
 		}
 		
+		public function removePanel(panel:DashPanel):void{
+			this.panels.removeElement(panel);
+			
+		}
+
 		//----------------------------------------------------------
 		//
 		//   Protected Functions 
 		//
 		//----------------------------------------------------------
-		public function addPanel(element:DashPanel):void {
-			this.panels.addElement(element);
-			
-		}
-		
-		public function removePanel(element:DashPanel):void{
-			this.panels.removeElement(element);
-			
-		} 
-		
+
 		override protected function partAdded(partName:String, instance:Object) : void {
 			trace("skinPartAdded: container: " + partName);
 			/*if (instance == dock) {
@@ -343,12 +356,13 @@ package com.comtaste.pantaste.components {
 				}
 			}
 		}
-		
+
 		//----------------------------------------------------------
 		//
 		//    Private Functions 
 		//
 		//----------------------------------------------------------
+
 		
 		/**
 		 * Initialization code for this DashPanelContainer
@@ -401,6 +415,7 @@ package com.comtaste.pantaste.components {
 		private function onPreInitialize(event:FlexEvent):void {
 			removeEventListener(FlexEvent.PREINITIALIZE, onPreInitialize);
 			setStyle('skinClass', com.comtaste.pantaste.components.skins.DashPanelContainerSkin);
+			//MoveBehaviour.proxyLayer = this;
 			
 		}
 		
@@ -435,7 +450,5 @@ package com.comtaste.pantaste.components {
 				}, 1, panel, panel.restoredX, panel.restoredY, panel.restoredWidth,
 											  panel.restoredHeight);
 		}
-		
-	
 	}
 }

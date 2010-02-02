@@ -14,8 +14,6 @@ package com.comtaste.pantaste.components {
 	import mx.events.FlexEvent;
 	
 	import spark.components.Group;
-	
-	
 	/**
 	 * <p>
 	 * A DashPanelHandler is an object in charge of giving feedback to
@@ -29,74 +27,13 @@ package com.comtaste.pantaste.components {
 	 * @see com.comtaste.pantaste.manager.DashLayoutManager
 	 */
 	public class DashPanelHandler extends Group {
-		
-		/**
-		 * Indicates the current cursor used by the CursorManager.
-		 */
-		private var currentCursorID:int = -1;
-		
-		/**
-		 * Move effect of this DashPanelHandler.
-		 */
-		protected var moveEffect:Move;
-		
-		/**
-		 * Resize effect of this DashPanelHandler
-		 */
-		protected var resizeEffect:Resize;
-		
-		/**
-		 * Indicates whether the user is in the middle of a moving action.
-		 */
-		protected var isMoving:Boolean = false;
-		
-		/**
-		 * Indicates whether the user has performed a move operation, by moving the mouse with the left button pressed.
-		 */
-		protected var wasMoved:Boolean = false;
-		
-		/**
-		 * Indicates whether the user is in the middle of a resizing action.
-		 */
-		protected var isResizing:Boolean = false;
-		
-		/**
-		 * Indicates whether the user has performed a resize operation, by moving the mouse with the left button pressed.
-		 */
-		protected var wasResized:Boolean = false;
-		
-		/**
-		 * Minimum resize in height allowed.
-		 */
-		public var minimumHeight:Number;
-		
-		/**
-		 * Minimum resize in width allowed.
-		 */
-		public var minimumWidth:Number;
-		
-		/**
-		 * Point object relative to the position where the user clicked, in local
-		 * coordinates
-		 */
-		protected var localClickPoint:Point = new Point();
-		
-		/**
-		 * The depth w.r.t. the DashContainer of the managed DashPanel, before any move/resize operation
-		 */
-		protected var originalDepth:int;
-		
-		/**
-		 * If true, the action performed is a resize. Otherwise it is a move.
-		 */
-		public var resizer:Boolean = false;
-		
-		/**
-		 * SWF Loader to load the skin appliable to this DashPanelHandler.
-		 * @see #setSnapshot
-		 */
-		private var swfLoader:SWFLoader;
-		
+
+		//----------------------------------------------------------
+		//
+		//   Constructor 
+		//
+		//----------------------------------------------------------
+
 		/* private var currentCursorID:int = -1; */
 		
 		/* [Embed("/assets/cursors/resize-l.png")]
@@ -126,9 +63,146 @@ package com.comtaste.pantaste.components {
 		
 		}
 		
-		//--------------------------------------
-		//  Protected Methods
-		//--------------------------------------
+		static public const MODE_IDLE:String = "idleMode";
+		static public const MODE_MOVE:String = "moveMode";
+		static public const MODE_RESIZE:String = "resizeMode";
+
+		//----------------------------------------------------------
+		//
+		//    Public Properties 
+		//
+		//----------------------------------------------------------
+
+		/**
+		 * Minimum resize in height allowed.
+		 */
+		public var minimumHeight:Number;
+		
+		/**
+		 * Minimum resize in width allowed.
+		 */
+		public var minimumWidth:Number;
+		
+		public var mode:String = MODE_IDLE;
+		
+		/**
+		 * If true, the action performed is a resize. Otherwise it is a move.
+		 */
+		//public var resizer:Boolean = false;
+
+		//----------------------------------------------------------
+		//
+		//    Protected Properties 
+		//
+		//----------------------------------------------------------
+
+		/**
+		 * Indicates whether the user is in the middle of a moving action.
+		 */
+		protected var isMoving:Boolean = false;
+		
+		/**
+		 * Indicates whether the user is in the middle of a resizing action.
+		 */
+		protected var isResizing:Boolean = false;
+		
+		/**
+		 * Point object relative to the position where the user clicked, in local
+		 * coordinates
+		 */
+		protected var localClickPoint:Point = new Point();
+		
+		/**
+		 * Move effect of this DashPanelHandler.
+		 */
+		protected var moveEffect:Move;
+		
+		/**
+		 * The depth w.r.t. the DashContainer of the managed DashPanel, before any move/resize operation
+		 */
+		protected var originalDepth:int;
+		
+		/**
+		 * Resize effect of this DashPanelHandler
+		 */
+		protected var resizeEffect:Resize;
+		
+		/**
+		 * Indicates whether the user has performed a move operation, by moving the mouse with the left button pressed.
+		 */
+		protected var wasMoved:Boolean = false;
+		
+		/**
+		 * Indicates whether the user has performed a resize operation, by moving the mouse with the left button pressed.
+		 */
+		protected var wasResized:Boolean = false;
+
+		//----------------------------------------------------------
+		//
+		//   Private Properties 
+		//
+		//----------------------------------------------------------
+
+		/**
+		 * Indicates the current cursor used by the CursorManager.
+		 */
+		private var currentCursorID:int = -1;
+		
+		/**
+		 * SWF Loader to load the skin appliable to this DashPanelHandler.
+		 * @see #setSnapshot
+		 */
+		private var swfLoader:SWFLoader;
+
+
+		//----------------------------------------------------------
+		//
+		//   Public Functions 
+		//
+		//----------------------------------------------------------
+
+		
+		/**
+		 * Applies an appearance to this DashPanelHandler.
+		 * <p>
+		 * 	When moving, the DashPanelHandler shows himself until the user
+		 * 	releases the mouse button, ending the action. This method can be used
+		 * 	to load a particular appearance related to the action carried.
+		 * </p>
+		 * @param source:ByteArray The visual data used to skin the DashPanelHandler
+		 */
+		public function setSnapshot(source:ByteArray):void {
+			
+			if (!swfLoader) {
+				swfLoader = new SWFLoader();
+				addElement(swfLoader);
+			}
+			
+			swfLoader.load(source);
+		}
+
+		//----------------------------------------------------------
+		//
+		//   Protected Functions 
+		//
+		//----------------------------------------------------------
+
+		/**
+		 * Brings over all his sibling components (w.r.t. the parent container) this DashPanelHandler
+		 */
+		protected function bringUp():void {
+			try {
+				originalDepth = IVisualElementContainer(parent).getElementIndex(this);
+				
+				if (originalDepth != parent.numChildren) {
+					
+					IVisualElementContainer(parent).setElementIndex(this, parent.numChildren - 1);
+					
+				}
+			} catch (e:Error) {
+				trace("WARNING: failed to bring the object forward.");
+			}
+		}
 		
 		/**
 		 * Initialization code for this DashPanelHandler.
@@ -146,57 +220,6 @@ package com.comtaste.pantaste.components {
 			/* addEventListener( MouseEvent.MOUSE_OUT, onMouseOut ); */
 			
 			addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-		}
-		
-		/**
-		 * Handler of the MouseEvent.MOUSE_OVER type MouseEvent.
-		 */
-		protected function onMouseOver(event:MouseEvent):void {
-			// Add a stage listener in case the mouse up comes out of the control.
-			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
-			
-			switchToGlobalMouseListener();
-			
-			/* if ( resizer )
-			   {
-			   cursorManager.removeCursor(currentCursorID);
-			   currentCursorID = cursorManager.setCursor( resizerCur, 2, -9, -6);
-			   }
-			   else
-			   {
-			   cursorManager.removeCursor(currentCursorID);
-			   currentCursorID = cursorManager.setCursor( moveCur, 2, -11, -13);
-			 } */
-			
-			var sp:Point = new Point(event.stageX, event.stageY);
-			
-			localClickPoint = globalToLocal(sp);
-			
-			if (resizer) {
-				isResizing = true;
-				isMoving = false;
-			} else {
-				isMoving = true;
-				isResizing = false;
-			}
-			
-			bringUp();
-		}
-		
-		/**
-		 * Handles the releasing of the mouse button.
-		 * @param event:MouseEvent the related MouseEvent.MOUSE_UP type MouseEvent.
-		 */
-		protected function onMouseUp(event:MouseEvent):void {
-			wasMoved = false;
-			isMoving = false;
-			
-			if (stage)
-				stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
-			
-			switchToLocalMouseListener();
-		
-			//resetZOrder();
 		}
 		
 		/* protected function onMouseOut( event:MouseEvent ) : void
@@ -270,29 +293,27 @@ package com.comtaste.pantaste.components {
 			
 			var managerEvent:DashManagerEvent;
 			
-			if (isMoving && event.buttonDown) {
+			if (mode == MODE_MOVE && event.buttonDown) {
+				trace("onMouseMove " + "MODE_MOVE");
 				desiredPos.y = dest.y - rotatedPoint.y;
 				desiredPos.x = dest.x - rotatedPoint.x;
 				
 				wasMoved = true;
+
+				dispatchEvent(new DashManagerEvent(DashManagerEvent.PANEL_HANDLER_MOVING, this));
 				
-				managerEvent = new DashManagerEvent(DashManagerEvent.PANEL_HANDLER_MOVING, this);
-				dispatchEvent(managerEvent);
+			} else if (mode == MODE_RESIZE && event.buttonDown) {
 				
-			}
-			
-			if (isResizing && event.buttonDown) {
-				
-				var pt:Point = globalToLocal(new Point(event.stageX, event.stageY));
-				var xsize:Number = pt.x;
-				var ysize:Number = pt.y;
-				desiredSize.x = xsize < minimumWidth ? minimumWidth : xsize;
-				desiredSize.y = ysize < minimumHeight ? minimumHeight : ysize;
+				var resizePoint:Point = globalToLocal(new Point(event.stageX, event.stageY));
+				//var xsize:Number = resizePoint.x;
+				//var ysize:Number = resizePoint.y;
+				desiredSize.x = resizePoint.x < minimumWidth ? minimumWidth : resizePoint.x;
+				desiredSize.y = resizePoint.y < minimumHeight ? minimumHeight : resizePoint.y;
 				
 				wasResized = true;
 				
-				managerEvent = new DashManagerEvent(DashManagerEvent.PANEL_HANDLER_RESIZING, this);
-				dispatchEvent(managerEvent);
+				
+				dispatchEvent(new DashManagerEvent(DashManagerEvent.PANEL_HANDLER_RESIZING, this));
 			}
 			
 			if (wasMoved) {
@@ -301,7 +322,7 @@ package com.comtaste.pantaste.components {
 				}
 				moveEffect = new Move();
 				moveEffect.target = this;
-				moveEffect.duration = 100;
+				moveEffect.duration = 1000;
 				moveEffect.xTo = desiredPos.x;
 				moveEffect.yTo = desiredPos.y;
 				moveEffect.play();
@@ -324,38 +345,54 @@ package com.comtaste.pantaste.components {
 		}
 		
 		/**
-		 * Switches the MouseEvent.MOUSE_MOVE type MouseEvent listener from the stage to this DashPanelHandler.
+		 * Handler of the MouseEvent.MOUSE_OVER type MouseEvent.
 		 */
-		protected function switchToLocalMouseListener():void {
+		protected function onMouseOver(event:MouseEvent):void {
+			// Add a stage listener in case the mouse up comes out of the control.
+			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			
+			switchToGlobalMouseListener();
+			
+			/* if ( resizer )
+			   {
+			   cursorManager.removeCursor(currentCursorID);
+			   currentCursorID = cursorManager.setCursor( resizerCur, 2, -9, -6);
+			   }
+			   else
+			   {
+			   cursorManager.removeCursor(currentCursorID);
+			   currentCursorID = cursorManager.setCursor( moveCur, 2, -11, -13);
+			 } */
+			
+			
+			
+			/*if (resizer) {
+				isResizing = true;
+				isMoving = false;
+			} else {
+				isMoving = true;
+				isResizing = false;
+			}*/
+		
+			//bringUp();
+		}
+		
+		/**
+		 * Handles the releasing of the mouse button.
+		 * @param event:MouseEvent the related MouseEvent.MOUSE_UP type MouseEvent.
+		 */
+		protected function onMouseUp(event:MouseEvent):void {
+			wasMoved = false;
+			isMoving = false;
+			
+			mode = DashPanelHandler.MODE_IDLE;
+			
 			if (stage)
-				stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-			addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-		}
+				stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			
+			switchToLocalMouseListener();
 		
-		/**
-		 * Switches the MouseEvent.MOUSE_MOVE type MouseEvent listener from this DashPanelHandler to the stage, in order
-		 * to have a better dragging.
-		 */
-		protected function switchToGlobalMouseListener():void {
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-			removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-		}
-		
-		/**
-		 * Brings over all his sibling components (w.r.t. the parent container) this DashPanelHandler
-		 */
-		protected function bringUp():void {
-			try {
-				originalDepth = IVisualElementContainer(parent).getElementIndex(this);
-				
-				if (originalDepth != parent.numChildren) {
-					
-					IVisualElementContainer(parent).setElementIndex(this, parent.numChildren - 1);
-					
-				}
-			} catch (e:Error) {
-				trace("WARNING: failed to bring the object forward.");
-			}
+			//resetZOrder();
 		}
 		
 		/**
@@ -375,33 +412,26 @@ package com.comtaste.pantaste.components {
 			}
 		}
 		
-		//--------------------------------------
-		//  Public Methods
-		//--------------------------------------
+		/**
+		 * Switches the MouseEvent.MOUSE_MOVE type MouseEvent listener from this DashPanelHandler to the stage, in order
+		 * to have a better dragging.
+		 */
+		protected function switchToGlobalMouseListener():void {
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+			removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+		}
 		
 		/**
-		 * Applies an appearance to this DashPanelHandler.
-		 * <p>
-		 * 	When moving, the DashPanelHandler shows himself until the user
-		 * 	releases the mouse button, ending the action. This method can be used
-		 * 	to load a particular appearance related to the action carried.
-		 * </p>
-		 * @param source:ByteArray The visual data used to skin the DashPanelHandler
+		 * Switches the MouseEvent.MOUSE_MOVE type MouseEvent listener from the stage to this DashPanelHandler.
 		 */
-		public function setSnapshot(source:ByteArray):void {
-			
-			if (!swfLoader) {
-				swfLoader = new SWFLoader();
-				addElement(swfLoader);
-			}
-			
-			swfLoader.load(source);
+		protected function switchToLocalMouseListener():void {
+			if (stage)
+				stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+			addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 		}
-	
 		//--------------------------------------
 		//  Overrided Methods
 		//--------------------------------------
-	
 	/* 		override public function set visible( value:Boolean ) : void
 	   {
 	   super.visible = value;

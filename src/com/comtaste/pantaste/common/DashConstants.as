@@ -73,12 +73,12 @@ package com.comtaste.pantaste.common
 		 * Move cursor.
 		 */
 		[Embed("/assets/cursors/move.png")]
-		public static const moveCur:Class;
+		public static const moveCursor:Class;
 		
 		/**
 		 * Resize cursor.
 		 */
 		[Embed("/assets/cursors/resize-l.png")]
-		public static const resizerCur:Class;
+		public static const resizeCursor:Class;
 	}
 }
