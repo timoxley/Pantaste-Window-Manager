@@ -1,5 +1,5 @@
 package com.comtaste.pantaste.components {
-	import com.comtaste.pantaste.behaviours.MoveBehaviour;
+	import com.comtaste.pantaste.behaviours.modifiers.SnapToGridModifier;
 	import com.comtaste.pantaste.common.DashConstants;
 	import com.comtaste.pantaste.components.skins.DashPanelContainerSkin;
 	import com.comtaste.pantaste.events.DashPanelContainerEvent;
@@ -9,6 +9,7 @@ package com.comtaste.pantaste.components {
 	import flash.events.Event;
 	import flash.utils.setTimeout;
 	
+	import mx.binding.utils.BindingUtils;
 	import mx.events.FlexEvent;
 	
 	import spark.components.Group;
@@ -105,7 +106,7 @@ package com.comtaste.pantaste.components {
 		//    Public Properties 
 		//
 		//----------------------------------------------------------
-
+		private var snapToGridModifier:SnapToGridModifier;
 		/**
 		 * The available height to place the DashPanels.
 		 */
@@ -291,9 +292,12 @@ package com.comtaste.pantaste.components {
 		public function addPanel(panel:DashPanel):void {
 			
 			
+			
 			this.panels.addElement(panel);
 			
 		}
+		
+	
 		
 		/**
 		 * Dispatches the DashPanelContainerEvent related to a change in the content of the DashPanelContainer
@@ -370,8 +374,10 @@ package com.comtaste.pantaste.components {
 		 */
 		private function onCreationComplete(event:FlexEvent):void {
 
-			
-			
+			snapToGridModifier = new SnapToGridModifier();
+			snapToGridModifier.enabled = false;
+			BindingUtils.bindProperty(snapToGridModifier, 'snapSize', this, 'snapSize');
+			BindingUtils.bindProperty(snapToGridModifier, 'enabled', this, 'snapped');
 			//addElement(_dock);
 			
 			if (!snapSize)
@@ -424,8 +430,13 @@ package com.comtaste.pantaste.components {
 		 * @param evt:ChildExistenceChangedEvent the event related to the addition of a DashPanel
 		 */
 		private function panelAdded(event:ElementExistenceEvent):void {
-			generatepantasteChangeEvent(DashPanelContainer.PANEL_ADDED,
-										event.element as DashPanel);
+			if (event.element is DashPanel) {
+				var panel:DashPanel = DashPanel(event.element);
+				panel.moveBehaviour.addModifier(snapToGridModifier);
+				panel.resizeBehaviour.addModifier(snapToGridModifier);
+				generatepantasteChangeEvent(DashPanelContainer.PANEL_ADDED,
+					panel);
+			}
 		}
 		
 		/**
@@ -433,8 +444,15 @@ package com.comtaste.pantaste.components {
 		 * @param evt:ChildExistenceChangedEvent the event related to the removing of a DashPanel
 		 */
 		private function panelRemoved(event:ElementExistenceEvent):void {
-			generatepantasteChangeEvent(DashPanelContainer.PANEL_REMOVED,
-				event.element as DashPanel);
+			if (event.element is DashPanel) {
+				var panel:DashPanel = DashPanel(event.element);
+				panel.moveBehaviour.removeModifier(snapToGridModifier);
+				panel.resizeBehaviour.removeModifier(snapToGridModifier);
+				generatepantasteChangeEvent(DashPanelContainer.PANEL_REMOVED,
+					panel);
+			}
+			
+			
 		}
 		
 		/**

@@ -11,7 +11,7 @@ package com.comtaste.pantaste.behaviours
 	
 	public class TransformBehaviourBase extends BehaviourBase
 	{
-		protected var proxy:DashProxy;
+		public var proxy:DashProxy;
 		protected var cursor:Class;
 		public var proxyLayer:IVisualElementContainer =
 			IVisualElementContainer(FlexGlobals.topLevelApplication);

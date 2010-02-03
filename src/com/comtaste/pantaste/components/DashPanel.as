@@ -83,8 +83,8 @@ package com.comtaste.pantaste.components {
 		//
 		//----------------------------------------------------------
 		
-		private var moveBehaviour:MoveBehaviour;
-		private var resizeBehaviour:ResizeBehaviour;
+		public var moveBehaviour:MoveBehaviour;
+		public var resizeBehaviour:ResizeBehaviour;
 		/**
 		 * Constructor.
 		 */

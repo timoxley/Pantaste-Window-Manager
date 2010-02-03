@@ -1,4 +1,6 @@
 package com.comtaste.pantaste.behaviours {
+	import com.comtaste.pantaste.behaviours.modifiers.IBehaviourModifier;
+	
 	import flash.events.IEventDispatcher;
 	
 	import mx.core.UIComponent;
@@ -6,7 +8,17 @@ package com.comtaste.pantaste.behaviours {
 	
 	public class BehaviourBase {
 		
-		public var enabled:Boolean = true;
+		//----------------------------------------------------------
+		//
+		//   Static Properties 
+		//
+		//----------------------------------------------------------
+		
+		public static const START:String = "startModifier";
+		
+		public static const STEP:String = "stepModifier";
+		
+		public static const STOP:String = "stopModifier";
 		
 		//----------------------------------------------------------
 		//
@@ -14,9 +26,11 @@ package com.comtaste.pantaste.behaviours {
 		//
 		//----------------------------------------------------------
 		
-		public function BehaviourBase(triggerEvent:String, target:UIComponent, dispatcher:IEventDispatcher=null) {
+		public function BehaviourBase(triggerEvent:String, target:UIComponent,
+									  dispatcher:IEventDispatcher=null) {
 			this.triggerEvent = triggerEvent;
 			this.target = target;
+			modifiers = new Vector.<IBehaviourModifier>();
 			
 			if (dispatcher) {
 				this.dispatcher = dispatcher;
@@ -24,6 +38,7 @@ package com.comtaste.pantaste.behaviours {
 				this.dispatcher = target;
 			}
 			initialize();
+		
 		}
 		
 		//----------------------------------------------------------
@@ -45,6 +60,8 @@ package com.comtaste.pantaste.behaviours {
 		public function set dispatcher(value:IEventDispatcher):void {
 			_dispatcher = value;
 		}
+		
+		public var enabled:Boolean = true;
 		
 		//--------------------------------------
 		// target 
@@ -76,11 +93,65 @@ package com.comtaste.pantaste.behaviours {
 		
 		//----------------------------------------------------------
 		//
+		//   Private Properties 
+		//
+		//----------------------------------------------------------
+		
+		private var modifiers:Vector.<IBehaviourModifier>;
+		
+		//----------------------------------------------------------
+		//
+		//   Public Functions 
+		//
+		//----------------------------------------------------------
+		
+		public function addModifier(modifier:IBehaviourModifier):void {
+			modifier.behaviour = this;
+			modifiers[modifiers.length] = modifier;
+		}
+		
+		public function hasModifier(modifier:IBehaviourModifier):Boolean {
+			
+			var index:uint = modifiers.indexOf(modifier);
+			return (index >= 0);
+		}
+		
+		public function removeModifier(modifier:IBehaviourModifier):void {
+			modifier.behaviour = null;
+			var index:uint = modifiers.indexOf(modifier);
+			
+			if (index < 0) {
+				throw new Error("Modifier not found in collection: " + modifier);
+			}
+			modifiers.splice(index, 1);
+		}
+		
+		//----------------------------------------------------------
+		//
 		//   Protected Functions 
 		//
 		//----------------------------------------------------------
+		
 		protected function initialize():void {
 		
+		}
+		
+		protected function start():void {
+			for each (var modifier:IBehaviourModifier in modifiers) {
+				modifier.start();
+			}
+		}
+		
+		protected function step():void {
+			for each (var modifier:IBehaviourModifier in modifiers) {
+				modifier.step();
+			}
+		}
+		
+		protected function stop():void {
+			for each (var modifier:IBehaviourModifier in modifiers) {
+				modifier.stop();
+			}
 		}
 	}
 }

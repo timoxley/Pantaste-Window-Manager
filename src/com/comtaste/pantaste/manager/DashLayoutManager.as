@@ -289,11 +289,7 @@ package com.comtaste.pantaste.manager {
 		 * Brings to front a component.
 		 * @param element:UIComponent The component to be brought to front.
 		 */
-		public function bringToFront(element:UIComponent):void {
-			if (element is DashPanel) {
-				trace("Bring to front:" + element);
-			}
-			
+		public function bringToFront(element:UIComponent):void {		
 			if (element && container.panels.contains(element)) {
 				if (container.panels.getElementIndex(element) !=  container.panels.numElements - 1) {
 					container.panels.setElementIndex(element, container.panels.numElements - 1);
@@ -528,26 +524,6 @@ package com.comtaste.pantaste.manager {
 					}
 				}
 			}
-		}
-		
-		/**
-		 * Adds the DashPanelHandler.
-		 * @see com.comtaste.pantaste.components.DashLayoutHandler
-		 */
-		protected function addHandler():void {
-			/*if (!handler) {
-				handler = new DashPanelHandler();
-				handler.visible = false;
-				SparkSkin(container.skin).addElement(handler);
-			}
-			
-			handler.addEventListener(DashManagerEvent.PANEL_HANDLER_MOVING, applyConstraintOnMove);
-			handler.addEventListener(DashManagerEvent.PANEL_HANDLER_RESIZING,
-									 applyConstraintOnResize);
-			handler.addEventListener(MouseEvent.MOUSE_OVER, activateHandler);
-			/* handler.addEventListener( MouseEvent.MOUSE_OUT, destroyHandler ); */
-			//handler.addEventListener(MouseEvent.MOUSE_UP, destroyHandler);
-			//bringToFront(handler);*/
 		}
 		
 		/**
@@ -811,9 +787,7 @@ package com.comtaste.pantaste.manager {
 		 */
 		protected function onContainerComplete(event:FlexEvent):void {
 			container.panels.addEventListener(ElementExistenceEvent.ELEMENT_ADD, onElementAdd);
-			container.panels.addEventListener(ElementExistenceEvent.ELEMENT_REMOVE, function (event:ElementExistenceEvent){
-				trace("Element Remove: " + event.element);
-			});
+			
 
 			if (container.dashed)
 				tile();
@@ -853,7 +827,6 @@ package com.comtaste.pantaste.manager {
 		protected function onElementAdd(event:ElementExistenceEvent):void {
 			if (!(event.element is DashPanel))
 				return;
-			//trace("onElementAdd: " + event.element);
 			var panel:DashPanel;
 			panel = event.element as DashPanel;
 			
@@ -862,7 +835,7 @@ package com.comtaste.pantaste.manager {
 				configurePanel(panel);
 			}
 			
-			addHandler();
+			//addHandler();
 		}
 		
 		/**
@@ -870,10 +843,9 @@ package com.comtaste.pantaste.manager {
 		 * @param event:MouseEvent The MouseEvent over the target DashPanel
 		 */
 		protected function onFocusPanel(event:MouseEvent):void {
-			trace("onFocusPanel");
+
 			if (event.currentTarget is DashPanel) {
 				bringToFront(event.currentTarget as DashPanel);
-				/* bringToFront( handler ); */
 			}
 		}
 		
@@ -1053,49 +1025,7 @@ package com.comtaste.pantaste.manager {
 				this.container.generatepantasteChangeEvent(DashPanelContainer.PANEL_RESTORED, panel);
 			}
 		}
-		
-		/**
-		 * Handles the DashPanelEvent.
-		 * <p>
-		 *  It sets the DashPanelHandler visible and on the same coordinates of the DashPanel being moved, or on the bottom-right corner
-		 * if being resized.
-		 * </p>
-		 * @param event:DashPanelEvent
-		 */
-		protected function prepareHandler(event:DashPanelEvent):void {
-			/*var panel:DashPanel = event.panel as DashPanel;
 			
-			if (panel.status == DashPanel.MAXIMIZED ||
-				(event.type == DashPanelEvent.PANEL_RESIZER_ACTION && container.dashed))
-				return;
-			
-			handler.visible = true;
-			bringToFront(handler);
-			selectedPanel = panel;
-			
-			if (event.type == DashPanelEvent.PANEL_TITLE_ACTION) {
-				dispatchEvent(new DashPanelEvent(DashPanelEvent.PANEL_MOVE_START, selectedPanel));
-				handler.mode = DashPanelHandler.MODE_MOVE;
-				handler.width = panel.width;
-				handler.height = 35;
-				handler.x = panel.x;
-				handler.y = panel.y;
-				handlerMoved = true;
-				handlerResized = false;
-				
-				trace("prepareHandler " + "MODE_MOVE");
-			} else if (event.type == DashPanelEvent.PANEL_RESIZER_ACTION) {
-				dispatchEvent(new DashPanelEvent(DashPanelEvent.PANEL_RESIZE_START, selectedPanel));
-				handler.mode = DashPanelHandler.MODE_RESIZE;
-				handler.width = 10;
-				handler.height = 10;
-				handler.x = panel.width + panel.x - 10;
-				handler.y = panel.height + panel.y - 10;
-				handlerMoved = false;
-				handlerResized = true;
-			}*/
-		}
-		
 		/**
 		 * Positions the icon over the DashPanel passed as argument.
 		 * @param panel:DashPanel The panel whose icon has to be positioned

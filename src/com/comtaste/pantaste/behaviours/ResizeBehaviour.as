@@ -62,7 +62,9 @@ package com.comtaste.pantaste.behaviours {
 		}
 		
 		private function onResizeTriggered(event:MouseEvent):void {
-			
+			if (!enabled) {
+				return;
+			}
 			if (event.currentTarget != dispatcher) {
 				return;
 			}
@@ -84,7 +86,7 @@ package com.comtaste.pantaste.behaviours {
 			
 			proxy.width = desiredWidth < minimumWidth ? minimumWidth : desiredWidth;
 			proxy.height = desiredHeight < minimumHeight ? minimumHeight : desiredHeight;
-		
+			step();
 		}
 		
 		private function onMouseUp(event:MouseEvent):void {
@@ -100,9 +102,11 @@ package com.comtaste.pantaste.behaviours {
 			hideCursor();
 			resizeTarget(proxy.width, proxy.height);
 			destroyProxy();
+			stop();
 		}
 		
 		private function startResizing():void {
+			start();
 			isResizing = true;
 			proxy.mode = DashProxy.MODE_BOUNDS;
 			
@@ -112,9 +116,12 @@ package com.comtaste.pantaste.behaviours {
 			
 			IVisualElement(FlexGlobals.topLevelApplication).addEventListener(MouseEvent.MOUSE_MOVE,
 																			 onMouseMove);
-			
-			proxyLayer.addElement(proxy);
+			trace("proxyLayer.getElementIndex(target): " + proxyLayer.getElementIndex(target));
+			trace("proxyLayer.numElements: " + proxyLayer.numElements);
+			proxyLayer.addElementAt(proxy, proxyLayer.numElements);
+			proxy.depth = target.depth + 1;
 		}
+		
 		
 		private function resizeTarget(width:Number, height:Number):void {
 			target.width = width;
