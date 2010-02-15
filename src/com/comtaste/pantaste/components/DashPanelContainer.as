@@ -16,6 +16,8 @@ package com.comtaste.pantaste.components {
 	import spark.components.SkinnableContainer;
 	import spark.events.ElementExistenceEvent;
 
+	
+	
 	/**
 	 * Dispatched when some change occours in sub panels
 	 * moved
@@ -37,6 +39,7 @@ package com.comtaste.pantaste.components {
 	 *
 	 * </p>
 	 */
+	[Style(name="gridAlpha",type="Number",format="Number",inherit="yes")]
 	[Style(name="panelCornerRadius",type="Number",format="Number",inherit="yes")]
 	public class DashPanelContainer extends SkinnableContainer {
 
@@ -96,8 +99,8 @@ package com.comtaste.pantaste.components {
 			addEventListener(FlexEvent.PREINITIALIZE, onPreInitialize);
 			addEventListener(FlexEvent.INITIALIZE, onInitialize);
 			addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
-			layoutManager = DashLayoutManager.getManager(this);
-		
+		//	layoutManager = DashLayoutManager.getManager(this);
+			
 		}
 
 
@@ -160,7 +163,7 @@ package com.comtaste.pantaste.components {
 		public function set dashed(value:Boolean):void {
 			if (value) {
 				/* _snapped = false; */
-				layoutManager.tile();
+			//	layoutManager.tile();
 			}
 			_dashed = value;
 		}
@@ -252,7 +255,7 @@ package com.comtaste.pantaste.components {
 		/**
 		 * Indicates whether there exists a snap grid in the container area.
 		 */
-		private var _snapped:Boolean = true;
+		private var _snapped:Boolean = false;
 		
 		/**
 		 * Indicates whether there exists a snap grid in the container area.
@@ -280,7 +283,7 @@ package com.comtaste.pantaste.components {
 		 * Reference to this DashPanelContainer's DashLayoutManager.
 		 * @see com.comtaste.pantaste.manager.DashLayoutManager
 		 */
-		protected var layoutManager:DashLayoutManager;
+	//protected var layoutManager:DashLayoutManager;
 
 
 		//----------------------------------------------------------
@@ -290,11 +293,7 @@ package com.comtaste.pantaste.components {
 		//----------------------------------------------------------
 
 		public function addPanel(panel:DashPanel):void {
-			
-			
-			
 			this.panels.addElement(panel);
-			
 		}
 		
 	
@@ -321,7 +320,7 @@ package com.comtaste.pantaste.components {
 		//----------------------------------------------------------
 
 		override protected function partAdded(partName:String, instance:Object) : void {
-			trace("skinPartAdded: container: " + partName);
+		//	trace("skinPartAdded: container: " + partName);
 			/*if (instance == dock) {
 				dock.container = this;
 			}*/
@@ -462,11 +461,11 @@ package com.comtaste.pantaste.components {
 		private function restorePanelSize(event:Event):void {
 			var panel:DashPanel = event.target as DashPanel;
 			
-			setTimeout(function():void {
+			/*setTimeout(function():void {
 					layoutManager.applyEffect(arguments[0], arguments[1], arguments[2],
 											  arguments[3], arguments[4]);
 				}, 1, panel, panel.restoredX, panel.restoredY, panel.restoredWidth,
-											  panel.restoredHeight);
+											  panel.restoredHeight);*/
 		}
 	}
 }

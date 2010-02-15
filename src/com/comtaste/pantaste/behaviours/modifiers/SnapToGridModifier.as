@@ -94,9 +94,11 @@ package com.comtaste.pantaste.behaviours.modifiers {
 		//----------------------------------------------------------
 		
 		private function snapToGrid(target:UIComponent):void {
-		
-			var position:Point = target.localToGlobal(new Point(target.x, target.y));
-			var newPosition:Point = behaviour.target.globalToLocal(position);
+			if (!enabled || !target.stage) {
+				return;
+			}
+			var position:Point = target.parent.localToGlobal(new Point(target.x, target.y));
+			var newPosition:Point = behaviour.target.parent.globalToLocal(position);
 			
 			target.y = Math.round(newPosition.y / snapSize) * snapSize;
 			target.x = Math.round(newPosition.x / snapSize) * snapSize;

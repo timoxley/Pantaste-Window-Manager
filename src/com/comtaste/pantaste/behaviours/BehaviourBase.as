@@ -117,13 +117,15 @@ package com.comtaste.pantaste.behaviours {
 		}
 		
 		public function removeModifier(modifier:IBehaviourModifier):void {
-			modifier.behaviour = null;
+			
 			var index:uint = modifiers.indexOf(modifier);
 			
 			if (index < 0) {
 				throw new Error("Modifier not found in collection: " + modifier);
 			}
 			modifiers.splice(index, 1);
+			modifier.enabled = false;
+			modifier.behaviour = null;
 		}
 		
 		//----------------------------------------------------------
@@ -137,18 +139,27 @@ package com.comtaste.pantaste.behaviours {
 		}
 		
 		protected function start():void {
+			if (modifiers.length == 0) {
+				return;
+			}
 			for each (var modifier:IBehaviourModifier in modifiers) {
 				modifier.start();
 			}
 		}
 		
 		protected function step():void {
+			if (modifiers.length == 0) {
+				return;
+			}
 			for each (var modifier:IBehaviourModifier in modifiers) {
 				modifier.step();
 			}
 		}
 		
 		protected function stop():void {
+			if (modifiers.length == 0) {
+				return;
+			}
 			for each (var modifier:IBehaviourModifier in modifiers) {
 				modifier.stop();
 			}

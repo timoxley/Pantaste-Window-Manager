@@ -371,7 +371,7 @@ package com.comtaste.pantaste.components
 		protected function setSavedAspect( chiave:String ) : void
 		{
 			// aggiorna stato e posizione
-           	var detail:DashPanelAspectVO;
+           	/*var detail:DashPanelAspectVO;
        		var panelRef:DashPanel;
        		
        		var lm:DashLayoutManager = DashLayoutManager.getManager( container );
@@ -420,7 +420,7 @@ package com.comtaste.pantaste.components
            	
            	container.dashed = storedSession.containerConfiguration[ chiave + "dashed" ];
            	container.snapped = storedSession.containerConfiguration[ chiave + "snapped" ];
-           	container.snapSize = storedSession.containerConfiguration[ chiave + "snapSize" ];
+           	container.snapSize = storedSession.containerConfiguration[ chiave + "snapSize" ];*/
 		}
 		
 		/**
@@ -433,7 +433,7 @@ package com.comtaste.pantaste.components
 		 */ 
 		protected function onSaveClick( event:MouseEvent ) : void
 		{
-			if ( event.target === savePop.saveBtn )
+			/*if ( event.target === savePop.saveBtn )
 			{
 				storedSession.storedAspects[ savePop.workspaceName.text ] = DashLayoutManager.getManagerPanelsAspectDetails( container.id );
 				storedSession.containerConfiguration[ savePop.workspaceName.text + "dashed" ] = container.dashed;
@@ -444,7 +444,7 @@ package com.comtaste.pantaste.components
 				createMenuLoadWorkspace( )
 			}
 			
-			PopUpManager.removePopUp( savePop );
+			PopUpManager.removePopUp( savePop );*/
 		}
 		/**
 		 * Populates the menu related to the minimized and started panels of the current session.
@@ -455,7 +455,7 @@ package com.comtaste.pantaste.components
 		 */ 
 		protected function createMenuPanel( ) : void
 		{
-			var iTot:int = minimizedMenuPanels.length
+			/*var iTot:int = minimizedMenuPanels.length
 			for ( var i:int = 0; i < iTot; i++ )
 			{
 				minimizedMenuPanels.pop();
@@ -488,7 +488,7 @@ package com.comtaste.pantaste.components
 				startedMenuPanels.push( {label : startedPanels[ y ].title,icon  : startedPanels[ y ].icon,panel : startedPanels[ y ]} );
 			}
 			//menu.rowHeight = defaultIconItemHeight;
-			menu.dataProvider = menuData;
+			menu.dataProvider = menuData;*/
 		}
 		/**
 		 * Populates the menu related (<code>workspaceMenu</code>) to the saved and loadable sessions.

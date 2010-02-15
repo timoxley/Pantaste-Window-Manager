@@ -11,13 +11,13 @@ package com.comtaste.pantaste.common
 		 * Defines the default DashPanel width.
 		 * @see com.comtaste.pantaste.components.pantaste
 		 */ 
-		public static const DEFAULT_PANEL_WIDTH:Number = 500;
+		public static const DEFAULT_PANEL_WIDTH:Number = 200;
 		
 		/**
 		 * Defines the default DashPanel height.
 		 * @see com.comtaste.pantaste.components.pantaste
 		 */
-		public static const DEFAULT_PANEL_HEIGHT:Number = 300;
+		public static const DEFAULT_PANEL_HEIGHT:Number = 200;
 		
 		/**
 		 * Defines the default dash cascade size.
@@ -67,7 +67,6 @@ package com.comtaste.pantaste.common
 		 * Default show start button value = True.
 		 */ 
 		public static const DEFAULT_SHOW_START_BUTON:Boolean = true;
-		
 		
 		/**
 		 * Move cursor.

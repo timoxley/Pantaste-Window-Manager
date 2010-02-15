@@ -1,7 +1,10 @@
 
 package com.comtaste.pantaste.components {
 	import com.comtaste.pantaste.components.skins.TitleBarSkin;
+	
+	import mx.core.UIComponentCachePolicy;
 	import mx.events.FlexEvent;
+	
 	import spark.components.Label;
 	import spark.components.SkinnableContainer;
 	
@@ -72,12 +75,18 @@ package com.comtaste.pantaste.components {
 		protected function onPreInitialize(event:FlexEvent):void {
 			removeEventListener(FlexEvent.PREINITIALIZE, onPreInitialize);
 			setStyle('skinClass', com.comtaste.pantaste.components.skins.TitleBarSkin);
+			mouseEnabled = false;
+			mouseChildren = true;
+			mouseEnabled = false;
+			
 		}
 		
 		override protected function partAdded(partName:String, instance:Object):void {
 			if (instance == title) {
 				title.mouseChildren = false;
 				title.mouseEnabled = false;
+				title.cacheAsBitmap = true;
+				title.cachePolicy = UIComponentCachePolicy.ON;
 			}
 		}
 	}

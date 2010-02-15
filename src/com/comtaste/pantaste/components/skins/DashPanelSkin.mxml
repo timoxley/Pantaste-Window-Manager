@@ -2,12 +2,15 @@
 <s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
 			 xmlns:s="library://ns.adobe.com/flex/spark"
 			 xmlns:mx="library://ns.adobe.com/flex/halo"
+			 xmlns:components="com.comtaste.pantaste.components.*"
+			 minHeight="{hostComponent.minHeight}"
+			 minWidth="{hostComponent.minWidth}"
 			 width="100%"
 			 height="100%"
-			 xmlns:components="com.comtaste.pantaste.components.*"
-			 minHeight="{DashConstants.DEFAULT_MINIMUM_PANEL_HEIGHT}"
-			 minWidth="{DashConstants.DEFAULT_MINIMUM_PANEL_WIDTH}"
-			 clipAndEnableScrolling="true">
+			 clipAndEnableScrolling="false"
+			 mouseEnabled="false"
+			 autoLayout="true"
+			 xmlns:graphics="com.comtaste.pantaste.components.skins.graphics.*">
 	<fx:Script>
 		<![CDATA[
 			import com.comtaste.pantaste.common.DashConstants;
@@ -25,47 +28,78 @@
 	<s:states>
 		<s:State name="normal" />
 
+		<s:State name="hover" />
+
+		<s:State name="selected" basedOn="hover" />
+
 		<s:State name="disabled" />
 	</s:states>
 
-	<s:Group width="100%" height="100%">
-		<s:Rect visible="true"
-				radiusX="10"
-				radiusY="10"
-				width="100%"
-				height="100%">
-			<s:fill>
-				<s:LinearGradient rotation="90">
-					<s:GradientEntry color="0xAAAAAA" />
+	<s:Group id="border"
+			 width="100%"
+			 height="100%"
+			 alpha="0"
+			 alpha.hover="1"
+			 mouseChildren="false"
+			 mouseEnabled="false">
+		<s:Rect visible="true" width="100%" height="100%">
+			<s:stroke>
+				<s:SolidColorStroke color="0x0098FF" weight="1" />
+			</s:stroke>
+		</s:Rect>
+	</s:Group>
 
-					<s:GradientEntry color="0x333333" />
-				</s:LinearGradient>
+	<s:Group width="100%"
+			 height="100%"
+			 left="-2"
+			 right="-2"
+			 top="-2"
+			 bottom="-2"
+			 alpha="0"
+			 alpha.selected="1"
+			 mouseChildren="false"
+			 mouseEnabled="false">
+		<s:Rect width="100%" height="100%" alpha="0.2" blendMode="normal">
+			<s:fill>
+				<s:SolidColor color="0xFFFFFF" />
 			</s:fill>
 		</s:Rect>
 	</s:Group>
 
-	<s:Group width="100%" height="100%">
-		<s:layout>
-			<s:VerticalLayout>
-			</s:VerticalLayout>
-		</s:layout>
+	<s:Group id="contentContainer" minWidth="{hostComponent.minHeight}" minHeight="{hostComponent.minHeight}" />
+	<!--</s:Group>-->
 
-		<components:DashPanelTitleBar id="titleBar" width="100%" panel="{hostComponent}" panelCornerRadius="10" />
+	<components:DashPanelTitleBar id="titleBar"
+								  width="100%"
+								  height="100%"
+								  panel="{hostComponent}"
+								  panelCornerRadius="10"
+								  alpha="0"
+								  mouseEnabled="false"
+								  alpha.hover="1" />
 
-		<s:Group id="content" width="100%" height="100%" />
-	</s:Group>
+	<graphics:Resizer id="resizeHandle"
+					  bottom="-5"
+					  right="-5"
+					  width="{DashConstants.DEFAULT_DASH_RESIZER_SIZE}"
+					  height="{DashConstants.DEFAULT_DASH_RESIZER_SIZE}"
+					  mouseEnabledWhereTransparent="true"
+					  mouseEnabled="true"
+					  alpha="0"
+					  alpha.hover="1">
+	</graphics:Resizer>
 
-	<s:Group id="resizeHandle"
-			 bottom="0"
-			 right="0"
-			 width="{DashConstants.DEFAULT_DASH_RESIZER_SIZE}"
-			 height="{DashConstants.DEFAULT_DASH_RESIZER_SIZE}"
-			 mouseEnabledWhereTransparent="true"
-			 mouseEnabled="true">
-		<s:Rect width="{DashConstants.DEFAULT_DASH_RESIZER_SIZE}" height="{DashConstants.DEFAULT_DASH_RESIZER_SIZE}">
-			<s:fill>
-				<s:SolidColor color="0x333333" />
-			</s:fill>
-		</s:Rect>
-	</s:Group>
+	<s:transitions>
+		<s:Transition autoReverse="false" fromState="normal" toState="hover">
+			<s:Parallel>
+				<s:Fade duration="150" startDelay="0" targets="{[titleBar, resizeHandle, border]}" />
+			</s:Parallel>
+		</s:Transition>
+
+		<s:Transition autoReverse="false" fromState="hover" toState="normal">
+			<s:Parallel>
+				<s:Fade duration="150" startDelay="0" targets="{[titleBar, resizeHandle, border]}" />
+			</s:Parallel>
+		</s:Transition>
+	</s:transitions>
 </s:SparkSkin>

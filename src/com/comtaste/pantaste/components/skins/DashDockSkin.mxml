@@ -4,7 +4,8 @@
 			 xmlns:mx="library://ns.adobe.com/flex/halo"
 			 width="100%"
 			 height="100"
-			 creationComplete="sparkskin1_creationCompleteHandler(event)">
+			 creationComplete="sparkskin1_creationCompleteHandler(event)"
+			 xmlns:ns="library://ns.adobe.com/flex/mx">
 	<fx:Script>
 		<![CDATA[
 			import mx.events.FlexEvent;
@@ -41,7 +42,7 @@
 	<s:HGroup top="0" width="100%" height="100%">
 		<s:Button id="startButton" label="Start" />
 
-		<mx:Menu id="menu" />
+		<ns:Menu id="menu" />
 
 		<s:HGroup id="minimisedPanelsBar" width="80%" />
 	</s:HGroup>

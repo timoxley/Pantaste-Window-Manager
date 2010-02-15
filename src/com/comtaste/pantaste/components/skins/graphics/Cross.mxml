@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/halo"
+		 width="50"
+		 height="50">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<s:Path data="M 10.9 1.7 L 9.3 0 L 5.4 4 L 1.6 0 L 0 1.7 L 3.9 5.6 L 0 9.5 L 1.6 11.1 C 2.3 10.2 3.5 8.8 5.4 7.1 L 9.3 11.1 L 10.9 9.5 L 7 5.6 L 10.9 1.7 Z"
+			height="100%"
+			width="100%"
+			winding="nonZero"
+			x="0"
+			y="0">
+		<s:fill>
+			<s:SolidColor color="#FFFFFF" />
+		</s:fill>
+	</s:Path>
+</s:Group>

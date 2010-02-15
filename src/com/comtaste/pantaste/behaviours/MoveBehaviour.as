@@ -1,15 +1,18 @@
 package com.comtaste.pantaste.behaviours {
 	import com.comtaste.pantaste.common.DashConstants;
 	import com.comtaste.pantaste.components.DashProxy;
+	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
+	
 	import mx.core.FlexGlobals;
 	import mx.core.IVisualElement;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
+	import mx.logging.LogLogger;
 	
 	
 	public class MoveBehaviour extends TransformBehaviourBase {
@@ -45,13 +48,14 @@ package com.comtaste.pantaste.behaviours {
 		// isMoving 
 		//--------------------------------------
 		
-		private var _isMoving:Boolean = false;
+		private static var _isMoving:Boolean = false;
 		
-		private function get isMoving():Boolean {
+		public function get isMoving():Boolean {
 			return _isMoving;
 		}
 		
-		private function set isMoving(value:Boolean):void {
+		public function set isMoving(value:Boolean):void {
+			trace("isMoving = " + value);
 			_isMoving = value;
 			
 			if (_isMoving) {
@@ -86,12 +90,28 @@ package com.comtaste.pantaste.behaviours {
 		//----------------------------------------------------------
 		
 		override protected function initialize():void {
-			cursor = DashConstants.moveCursor;
-			super.dispatcher.addEventListener(triggerEvent, onMoveTriggered);
-			super.dispatcher.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
-			super.dispatcher.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
-			
+			if (target.stage) {
+				setup();
+			} else {
+				target.addEventListener(Event.ADDED_TO_STAGE, function(event:Event):void {
+					target.removeEventListener(Event.ADDED_TO_STAGE, arguments.callee);
+					setup();
+				});
+			}
 			super.initialize();
+		}
+		
+		private function setup():void {
+			cursor = DashConstants.moveCursor;
+			offset = new Point(-10, -5);
+			super.dispatcher.addEventListener(triggerEvent, onMoveTriggered);
+			//super.dispatcher.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+			super.dispatcher.addEventListener(MouseEvent.ROLL_OVER, onMouseOver);
+			//super.dispatcher.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			super.dispatcher.addEventListener(MouseEvent.ROLL_OUT, onMouseOut);
+			//	target.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			target.addEventListener(MouseEvent.ROLL_OUT, onMouseOut);
+			
 		}
 		
 		//----------------------------------------------------------
@@ -107,10 +127,20 @@ package com.comtaste.pantaste.behaviours {
 		}
 		
 		private function onMouseMove(event:MouseEvent):void {
+			if (!enabled) { 
+				return;	
+			}
+			if (isMoving) {
+				if (!event.buttonDown) {
+					//onMouseUp(event);
+				}
+				step();
+				return;
+			}
 			if (preparingToDrag) {
 				newPosition.x = event.stageX;
 				newPosition.y = event.stageY;
-				// var transformedOriginalPosition:Point = UIComponent(moveTarget.parentSelectable).localToGlobal(originalPosition)
+			
 				var differenceX:Number = Math.abs(newPosition.x - originalMousePosition.x);
 				var differenceY:Number = Math.abs(newPosition.y - originalMousePosition.y);
 				var distance:Number =
@@ -121,13 +151,13 @@ package com.comtaste.pantaste.behaviours {
 					
 				}
 			}
-		
+			
 			step();
-			trace('step');
+			
 		}
 		
 		private function onMouseOut(event:MouseEvent):void {
-			if (event.currentTarget != dispatcher) {
+			if (event.currentTarget != target || event.currentTarget != dispatcher) {
 				return;
 			}
 			
@@ -137,10 +167,14 @@ package com.comtaste.pantaste.behaviours {
 		}
 		
 		private function onMouseOver(event:MouseEvent):void {
-			if (event.currentTarget != dispatcher) {
+			if (event.currentTarget != dispatcher || event.target != target) {
 				return;
 			}
 			showCursor();
+			this.proxy.invalidateSnapshot();
+			this.proxy.createSnapshot();
+			this.proxy.scaleX = target.scaleX;
+			this.proxy.scaleY = target.scaleY;
 		}
 		
 		private function onMouseUp(event:MouseEvent):void {
@@ -149,6 +183,7 @@ package com.comtaste.pantaste.behaviours {
 			
 			if (preparingToDrag) {
 				preparingToDrag = false;
+				isMoving = false;
 				return;
 			}
 			stopMoving();
@@ -166,11 +201,14 @@ package com.comtaste.pantaste.behaviours {
 			triggeringEvent = event;
 			
 			startMoving();
-		
+			event.stopPropagation();
 		}
 		
 		private function startDragging():void {
+			proxy.mode = DashProxy.MODE_SNAPSHOT;
+			
 			start();
+			isMoving = true;
 			if (proxy.initialized) {
 				proxy.startDrag();
 			} else {
@@ -182,6 +220,7 @@ package com.comtaste.pantaste.behaviours {
 			preparingToDrag = false;
 			
 			
+			
 			proxyLayer.addElementAt(proxy, proxyLayer.numElements);
 			proxy.depth = target.depth + 1;
 		
@@ -190,14 +229,13 @@ package com.comtaste.pantaste.behaviours {
 		private function startMoving():void {
 			
 			
-			isMoving = true;
-			proxy.mode = DashProxy.MODE_SNAPSHOT;
-			//proxy.depth = target.depth + 1;
-			
 			var triggerPosition:Point = new Point(triggeringEvent.stageX, triggeringEvent.stageY);
-			var targetPosition:Point = DisplayObject(proxyLayer).globalToLocal(triggerPosition);
+			var targetPosition:Point = toCoordinateSpace(triggerPosition.x, triggerPosition.y, DisplayObject(proxyLayer));
+		
 			proxy.x = target.x;
 			proxy.y = target.y;
+			proxy.scaleX = target.scaleX;
+			proxy.scaleY = target.scaleY;
 			
 			originalPosition = new Point(target.x, target.y);
 			originalMousePosition = new Point(triggeringEvent.stageX, triggeringEvent.stageY);
@@ -222,6 +260,9 @@ package com.comtaste.pantaste.behaviours {
 			var position:Point = proxy.localToGlobal(new Point(proxy.x, proxy.y));
 			
 			var newPosition:Point = target.globalToLocal(position);
+			
+			
+			
 			proxy.x = 0;
 			proxy.y = 0;
 			originalPosition = new Point();

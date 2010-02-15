@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Skin xmlns:s="library://ns.adobe.com/flex/spark" xmlns:fx="http://ns.adobe.com/mxml/2009">
+<s:Skin xmlns:s="library://ns.adobe.com/flex/spark" xmlns:fx="http://ns.adobe.com/mxml/2009" visible="{hostComponent.visible}">
 	<fx:Metadata>[HostComponent("spark.components.Button")]</fx:Metadata>
 
 	<s:states>
@@ -12,24 +12,61 @@
 		<s:State name="disabled" />
 	</s:states>
 
-	<s:Group buttonMode="true"
-			 id="group1"
-			 y="0"
-			 x="5"
-			 alpha.disabled="0.5">
-		<s:Ellipse id="ellipse3"
-				   y="1"
-				   x="1"
-				   width="28"
-				   height="28">
-			<s:stroke>
-				<s:SolidColorStroke caps="none"
-									color="#1e1e1e"
-									joints="miter"
-									miterLimit="4"
-									weight="2" />
-			</s:stroke>
+	<s:Group id="colourGroup">
+		<s:Group buttonMode="true"
+				 id="group1"
+				 y="0"
+				 x="5"
+				 alpha.disabled="0.5">
+			<s:Ellipse id="ellipse3"
+					   y="1"
+					   x="1"
+					   width="28"
+					   height="28">
+				<s:stroke>
+					<s:SolidColorStroke caps="none"
+										color="#1e1e1e"
+										joints="miter"
+										miterLimit="4"
+										weight="2" />
+				</s:stroke>
 
+				<s:fill>
+					<s:LinearGradient rotation="270">
+						<s:GradientEntry alpha="1.0" color="#305b24" ratio="0" />
+
+						<s:GradientEntry alpha="1.0" color="#8fc70d" ratio="1" />
+					</s:LinearGradient>
+				</s:fill>
+			</s:Ellipse>
+
+			<s:Ellipse alpha="1"
+					   blendMode="normal"
+					   height="19"
+					   id="ellipse4"
+					   width="22"
+					   x="4"
+					   y="2">
+				<s:fill>
+					<s:LinearGradient rotation="90">
+						<s:GradientEntry alpha="1.0" color="#b9db70" ratio="0" />
+
+						<s:GradientEntry alpha="0.0" color="#76b632" ratio="1" />
+					</s:LinearGradient>
+				</s:fill>
+			</s:Ellipse>
+		</s:Group>
+
+		<s:Ellipse alpha="0.66"
+				   blendMode="screen"
+				   id="ellipse1"
+				   includeIn="down,over,up"
+				   width="26"
+				   height="26"
+				   y="2"
+				   x="7"
+				   visible.up="false"
+				   visible.down="false">
 			<s:fill>
 				<s:LinearGradient rotation="270">
 					<s:GradientEntry alpha="1.0" color="#305b24" ratio="0" />
@@ -39,55 +76,52 @@
 			</s:fill>
 		</s:Ellipse>
 
-		<s:Ellipse alpha="1"
-				   blendMode="normal"
-				   height="19"
-				   id="ellipse4"
-				   width="22"
-				   x="4"
-				   y="2">
+		<s:Ellipse blendMode="darken"
+				   height="26"
+				   id="ellipse2"
+				   includeIn="down,over,up"
+				   width="26"
+				   y="2"
+				   x="7"
+				   visible.up="false"
+				   visible.over="false">
 			<s:fill>
-				<s:LinearGradient rotation="90">
-					<s:GradientEntry alpha="1.0" color="#b9db70" ratio="0" />
+				<s:SolidColor alpha="0.4" color="#000000" />
+			</s:fill>
+		</s:Ellipse>
 
-					<s:GradientEntry alpha="0.0" color="#76b632" ratio="1" />
-				</s:LinearGradient>
+		<s:Ellipse alpha="0.3"
+				   blendMode="lighten"
+				   height="26"
+				   width="26"
+				   y="2"
+				   x="7">
+			<s:fill>
+				<s:SolidColor color="{0xFFFFFF}">
+				</s:SolidColor>
+			</s:fill>
+		</s:Ellipse>
+
+		<s:Ellipse alpha="1"
+				   blendMode="multiply"
+				   height="26"
+				   id="colorOverlay"
+				   width="26"
+				   y="2"
+				   x="7">
+			<s:fill>
+				<s:SolidColor color="{getStyle('color') || 0xFFFFFF}">
+				</s:SolidColor>
 			</s:fill>
 		</s:Ellipse>
 	</s:Group>
 
-	<s:Ellipse alpha="0.66"
-			   blendMode="screen"
-			   id="ellipse1"
-			   includeIn="down,over,up"
-			   width="26"
-			   height="26"
-			   y="2"
-			   x="7"
-			   visible.up="false"
-			   visible.down="false">
-		<s:fill>
-			<s:LinearGradient rotation="270">
-				<s:GradientEntry alpha="1.0" color="#305b24" ratio="0" />
-
-				<s:GradientEntry alpha="1.0" color="#8fc70d" ratio="1" />
-			</s:LinearGradient>
-		</s:fill>
-	</s:Ellipse>
-
-	<s:Ellipse blendMode="darken"
-			   height="29"
-			   id="ellipse2"
-			   includeIn="down,over,up"
-			   width="29"
-			   y="1"
-			   x="6"
-			   visible.up="false"
-			   visible.over="false">
-		<s:fill>
-			<s:SolidColor alpha="0.4" color="#000000" />
-		</s:fill>
-	</s:Ellipse>
+	<s:Group id="iconContainer"
+			 width="15"
+			 height="15"
+			 y="8"
+			 x="13">
+	</s:Group>
 
 	<s:RichText buttonMode="false"
 				color="#000000"
