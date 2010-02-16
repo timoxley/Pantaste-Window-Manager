@@ -48,7 +48,7 @@
 	</s:Group>
 
 	<s:Group width="100%" height="100%" mouseEnabled="false">
-		<s:Label id="title" left="10" verticalCenter="0" />
+		<s:Label id="title" top="-10" color="0xFFFFFF" horizontalCenter="0" />
 
 		<components:DashPanelControls id="controls"
 									  right="-5"

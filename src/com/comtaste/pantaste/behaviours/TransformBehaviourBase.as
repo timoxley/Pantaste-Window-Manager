@@ -54,10 +54,12 @@ package com.comtaste.pantaste.behaviours {
 		//----------------------------------------------------------
 		
 		protected function createProxy():void {
-			proxy = new DashProxy();
-			proxy.setStyle('skinClass', com.comtaste.pantaste.components.skins.DashProxySkin);
-			proxy.targetElement = target;
-			proxyLayer = IVisualElementContainer(target.parent);
+			if (!proxy) {
+				proxy = new DashProxy();
+				proxy.setStyle('skinClass', com.comtaste.pantaste.components.skins.DashProxySkin);
+				proxy.targetElement = target;
+				proxyLayer = IVisualElementContainer(target.parent);
+			}			
 		}
 		
 		protected function destroyProxy():void {

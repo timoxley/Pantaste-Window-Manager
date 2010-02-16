@@ -171,10 +171,8 @@ package com.comtaste.pantaste.behaviours {
 				return;
 			}
 			showCursor();
-			this.proxy.invalidateSnapshot();
-			this.proxy.createSnapshot();
-			this.proxy.scaleX = target.scaleX;
-			this.proxy.scaleY = target.scaleY;
+			proxy.createSnapshot();
+			
 		}
 		
 		private function onMouseUp(event:MouseEvent):void {
@@ -218,24 +216,17 @@ package com.comtaste.pantaste.behaviours {
 					});
 			}
 			preparingToDrag = false;
-			
-			
-			
 			proxyLayer.addElementAt(proxy, proxyLayer.numElements);
 			proxy.depth = target.depth + 1;
 		
 		}
 		
 		private function startMoving():void {
-			
-			
 			var triggerPosition:Point = new Point(triggeringEvent.stageX, triggeringEvent.stageY);
 			var targetPosition:Point = toCoordinateSpace(triggerPosition.x, triggerPosition.y, DisplayObject(proxyLayer));
 		
 			proxy.x = target.x;
 			proxy.y = target.y;
-			proxy.scaleX = target.scaleX;
-			proxy.scaleY = target.scaleY;
 			
 			originalPosition = new Point(target.x, target.y);
 			originalMousePosition = new Point(triggeringEvent.stageX, triggeringEvent.stageY);

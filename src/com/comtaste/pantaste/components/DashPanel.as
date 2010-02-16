@@ -14,6 +14,8 @@ package com.comtaste.pantaste.components {
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.core.IVisualElement;
+	import mx.core.IVisualElementContainer;
+	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
 	import mx.managers.DragManager;
 	
@@ -371,11 +373,14 @@ package com.comtaste.pantaste.components {
 		
 		
 		override protected function getCurrentSkinState() : String {
-			if (selectBehaviour.isSelected) {
-				return 'selected';
-			} else if (hovered && !(resizeBehaviour.isResizing || moveBehaviour.isMoving)) {
-				return 'hover';
+			if (!(resizeBehaviour.isResizing || moveBehaviour.isMoving)) {
+				if (selectBehaviour.isSelected) {
+					return 'selected';
+				} else if (hovered) {
+					return 'hover';
+				}
 			}
+			
 			return super.getCurrentSkinState();
 		}
 		
@@ -383,22 +388,38 @@ package com.comtaste.pantaste.components {
 			if (instance == titleBar) {
 				BindingUtils.bindProperty(titleBar.title, 'text', this, 'title');
 			} else if (instance == contentContainer) {
-			
-				addContent(contentToCreate);
+				/*contentToCreate.percentHeight = 100;
+				contentToCreate.percentWidth = 100;*/
+				//this.width = contentToCreate.width;
+				//this.height = contentToCreate.height;
+				
 				BindingUtils.bindProperty(contentContainer, 'height', contentToCreate, 'height');
 				BindingUtils.bindProperty(contentContainer, 'width', contentToCreate, 'width');
 				hasContentToCreate = false;
+				addContent(contentToCreate);
 				
 				moveBehaviour.proxy.snapshotTarget = contentContainer;
 			}
 			
 			if (contentContainer && resizeHandle) {
 			//resizeBehaviour = new ResizeBehaviour(MouseEvent.MOUSE_DOWN, UIComponent(contentToCreate), resizeHandle);
-				resizeBehaviour = new ResizeBehaviour(MouseEvent.MOUSE_DOWN, contentContainer, resizeHandle);
-				//resizeBehaviour.proxyLayer = IVisualElementContainer(parent);
+				resizeBehaviour = new ResizeBehaviour(MouseEvent.MOUSE_DOWN, UIComponent(contentToCreate), resizeHandle);
+				//resizeBehaviour.proxy.snapshotTarget = contentContainer;
+			//	resizeBehaviour.proxyLayer = IVisualElementContainer(this.parentApplication);
+				resizeBehaviour.startTriggered.add(onResizeTriggered);
+				resizeBehaviour.stopTriggered.add(onResizeStopped);
 				//resizeBehaviour.resizeMode = ResizeBehaviour.SCALE_MODE;
 				BindingUtils.bindProperty(resizeBehaviour, 'enabled', this, 'resizable');
+				
 			}
+		}
+		
+		private function onResizeTriggered():void {
+			this.invalidateSkinState();
+		}
+		
+		private function onResizeStopped():void {
+			this.invalidateSkinState();
 		}
 		
 		private var hasContentToCreate:Boolean = false;

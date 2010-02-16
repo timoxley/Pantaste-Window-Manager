@@ -5,6 +5,8 @@ package com.comtaste.pantaste.behaviours {
 	
 	import mx.core.UIComponent;
 	
+	import org.osflash.signals.Signal;
+	
 	
 	public class BehaviourBase {
 		
@@ -37,6 +39,9 @@ package com.comtaste.pantaste.behaviours {
 			} else {
 				this.dispatcher = target;
 			}
+			startTriggered = new Signal();
+			stepTriggered = new Signal();
+			stopTriggered = new Signal();
 			initialize();
 		
 		}
@@ -138,16 +143,23 @@ package com.comtaste.pantaste.behaviours {
 		
 		}
 		
+		public var startTriggered:Signal;
+		public var stepTriggered:Signal;
+		public var stopTriggered:Signal;
+		
 		protected function start():void {
+			startTriggered.dispatch();
 			if (modifiers.length == 0) {
 				return;
 			}
 			for each (var modifier:IBehaviourModifier in modifiers) {
 				modifier.start();
 			}
+			
 		}
 		
 		protected function step():void {
+			stepTriggered.dispatch();
 			if (modifiers.length == 0) {
 				return;
 			}
@@ -157,12 +169,14 @@ package com.comtaste.pantaste.behaviours {
 		}
 		
 		protected function stop():void {
+			
 			if (modifiers.length == 0) {
 				return;
 			}
 			for each (var modifier:IBehaviourModifier in modifiers) {
 				modifier.stop();
 			}
+			stopTriggered.dispatch()
 		}
 	}
 }

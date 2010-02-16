@@ -45,8 +45,9 @@
 	</s:Group>
 
 	<s:Group id="snapshot"
-			 includeIn="snapshot"
+			 includeIn="bounds, snapshot"
 			 width="100%"
+			 visible.bounds="false"
 			 height="100%"
 			 alpha="{hostComponent.getStyle('proxyAlpha')}"
 			 mouseEnabled="false"

@@ -1,6 +1,7 @@
 package com.comtaste.pantaste.components {
 	import com.comtaste.pantaste.components.skins.DashProxySkin;
 	
+	import flash.system.Capabilities;
 	import flash.utils.ByteArray;
 	
 	import mx.controls.SWFLoader;
@@ -87,7 +88,6 @@ package com.comtaste.pantaste.components {
 		// targetElement 
 		//--------------------------------------
 		
-		
 		private var _targetElement:UIComponent;
 		
 		public function get targetElement():UIComponent {
@@ -99,16 +99,17 @@ package com.comtaste.pantaste.components {
 				return;
 			}
 			
+			
 			_targetElement = value;
-			this.width = _targetElement.measuredWidth;
-			this.height = _targetElement.measuredHeight;
-			this.scaleX = _targetElement.scaleX;
-			this.scaleY = _targetElement.scaleY;
+			//this.width = _targetElement.measuredWidth;
+			//this.height = _targetElement.measuredHeight;
+			//this.scaleX = _targetElement.scaleX;
+			//this.scaleY = _targetElement.scaleY;
 			
 			_targetElement.addEventListener(FlexEvent.UPDATE_COMPLETE,
 											onUpdateComplete);
-			/*this.x = _targetElement.x;
-			 this.y = _targetElement.y;*/
+			//this.x = _targetElement.x;
+			// this.y = _targetElement.y;
 			this.addEventListener(FlexEvent.CREATION_COMPLETE,
 								  onCreationComplete);
 			//this.depth = targetElement.depth + 1;
@@ -198,27 +199,39 @@ package com.comtaste.pantaste.components {
 			if (!swfLoader) {
 				swfLoader = new SWFLoader();
 				swfLoader.smoothBitmapContent = true;
+				swfLoader.cacheAsBitmap = true;
 			}
+
 			
 			if (_snapshotTarget && _snapshotTarget.visible &&
 				_snapshotTarget.initialized) {
-				try {
+			//	try {
 					var imageSnap:ImageSnapshot =
-						ImageSnapshot.captureImage(_snapshotTarget, 72, null, false);
-					
+						ImageSnapshot.captureImage(_snapshotTarget, Capabilities.screenDPI, null, false);
+					//Capabilities.
 					var imageByteArray:ByteArray = ByteArray(imageSnap.data);
 					
 					swfLoader.load(imageByteArray);
-					swfLoader.cacheAsBitmap = true;
-					snapshot.removeAllElements();
-
-					snapshot.addElement(swfLoader);
-				} catch (error:Error) {
-					trace("Error taking snapshot!");
-				}
+					if (snapshot) {
+						snapshot.removeAllElements();
+						snapshot.addElement(swfLoader);
+					}
+					
+					
+					//snapshot.addElement(swfLoader);
+					
+				//} catch (error:Error) {
+				//	trace("Error taking snapshot: " + error.message);
+				//}
 			}
 			_snapshotInvalidated = false;
 		
+		}
+		
+		override protected function partAdded(partName:String, instance:Object) : void {
+			if (instance == snapshot) {
+				snapshot.addElement(swfLoader);
+			}
 		}
 		
 		private function onPreInitialize(event:FlexEvent):void {

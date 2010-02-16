@@ -5,8 +5,6 @@
 			 xmlns:components="com.comtaste.pantaste.components.*"
 			 minHeight="{hostComponent.minHeight}"
 			 minWidth="{hostComponent.minWidth}"
-			 width="100%"
-			 height="100%"
 			 clipAndEnableScrolling="false"
 			 mouseEnabled="false"
 			 autoLayout="true"
@@ -16,10 +14,6 @@
 			import com.comtaste.pantaste.common.DashConstants;
 		]]>
 	</fx:Script>
-
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
 
 	<fx:Metadata>
 		[HostComponent("com.comtaste.pantaste.components.DashPanel")]
@@ -66,7 +60,7 @@
 		</s:Rect>
 	</s:Group>
 
-	<s:Group id="contentContainer" minWidth="{hostComponent.minHeight}" minHeight="{hostComponent.minHeight}" />
+	<s:Group id="contentContainer" verticalCenter="0" horizontalCenter="0" />
 	<!--</s:Group>-->
 
 	<components:DashPanelTitleBar id="titleBar"

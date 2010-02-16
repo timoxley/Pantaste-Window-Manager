@@ -267,22 +267,22 @@ package com.comtaste.pantaste.behaviours {
 		
 		private function startResizing():void {
 			start();
-			isResizing = true;
+			/*isResizing = true;
 			//if (resizeMode == SCALE_MODE) {
 				proxy.mode = DashProxy.MODE_SNAPSHOT;
 			//} else {
 				proxy.mode = DashProxy.MODE_BOUNDS;
 			//}
 			
-			
+			if (!target.parent) {
+				throw new Error("No parent?!");
+			}
 			var proxyPosition:Point =
 				toCoordinateSpace(target.x, target.y, DisplayObject(proxyLayer),
 								  target.parent);
 			
 			proxy.x = proxyPosition.x;
 			proxy.y = proxyPosition.y;
-			
-			
 			
 			originalSize.x = target.getLayoutBoundsWidth();
 			originalSize.y = target.getLayoutBoundsHeight();
@@ -293,7 +293,8 @@ package com.comtaste.pantaste.behaviours {
 			
 			proxy.width = proxyDimensions.x;
 			proxy.height = proxyDimensions.y;
-			
+			proxy.depth = 10;
+			//target.visible = false;
 			//proxy.scaleX = target.scaleX;
 			//proxy.scaleY = target.scaleY;
 			
@@ -301,7 +302,35 @@ package com.comtaste.pantaste.behaviours {
 				addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			IVisualElement(FlexGlobals.topLevelApplication).
 				addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+			proxyLayer.addElementAt(proxy, proxyLayer.numElements);*/
+			
+			isResizing = true;
+			if (resizeMode == SCALE_MODE) {
+				proxy.mode = DashProxy.MODE_SNAPSHOT;
+			} else {
+				proxy.mode = DashProxy.MODE_BOUNDS;
+			}
+			
+			start();
+			//isMoving = true;
+			/*if (proxy.initialized) {
+				proxy.startDrag();
+			} else {
+				proxy.addEventListener(FlexEvent.CREATION_COMPLETE, function(event:Event):void {
+					proxy.removeEventListener(FlexEvent.CREATION_COMPLETE, arguments.callee);
+					proxy.startDrag();
+				});
+			}*/
+			
+			IVisualElement(FlexGlobals.topLevelApplication).
+				addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			IVisualElement(FlexGlobals.topLevelApplication).
+				addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 			proxyLayer.addElementAt(proxy, proxyLayer.numElements);
+			
+			
+			proxyLayer.addElement(proxy);
+			proxy.depth = target.depth + 1;
 			
 		}
 		
@@ -311,7 +340,9 @@ package com.comtaste.pantaste.behaviours {
 			IVisualElement(FlexGlobals.topLevelApplication).
 				removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove)
 			hideCursor();
+			
 			resizeTarget(proxy.width, proxy.height);
+			//target.visible = true;
 			destroyProxy();
 			stop();
 		}
